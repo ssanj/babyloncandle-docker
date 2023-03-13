@@ -1,0 +1,10 @@
+blog-src/.cabal-sandbox
+blog-src/dist
+blog-src/drafts
+blog-src/hakyllsrc
+blog-src/.gitignore
+blog-src/.git
+blog-src/*.sublime-*
+blog-src/.stack-work
+blog-src/.stack
+

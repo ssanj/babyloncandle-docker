@@ -1,0 +1,27 @@
+version: '3.3'
+
+services:
+
+  blog:
+    container_name: blog
+    image: ssanj/babyloncandle:v1
+    ports:
+    - protocol: tcp
+      published: 9999
+      target: 9999
+
+    volumes:
+      - ./data/templates:/app/templates
+      - ./data/posts:/app/posts
+      - ./data/images:/app/images
+      - ./data/js:/app/js
+      - ./data/css:/app/css
+      - ./data/drafts:/app/drafts
+      - ./data/dist:/app/dist
+
+    # entrypoint: ["/root/.local/bin/site", "server"]
+    # stdin_open: true # docker run -i
+    # tty: true        # docker run -t
+    command:
+    - --host=0.0.0.0
+    - --port=9999

@@ -1,0 +1,41 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.33.0.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: 1ab41f96ed0f8e0dd51593bd0c5a323e962efea9ae225dbc105771cb778314bd
+
+name:           BabylonCandle
+version:        0.1.0.0
+description:    Please see the README on GitHub at <https://github.com/ssanj/BabylonCandle#readme>
+homepage:       https://github.com/ssanj/BabylonCandle#readme
+bug-reports:    https://github.com/ssanj/BabylonCandle/issues
+author:         sanjiv sahayam
+maintainer:     sanjsmailbox@gmail.com
+copyright:      (c) 2017 sanjiv sahayam
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.md
+    ChangeLog.md
+
+source-repository head
+  type: git
+  location: https://github.com/ssanj/BabylonCandle
+
+executable site
+  main-is: Site.hs
+  other-modules:
+      Paths_BabylonCandle
+  hs-source-dirs:
+      app
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      aeson
+    , base >=4.7 && <5
+    , bytestring
+    , hakyll
+    , text
+  default-language: Haskell2010

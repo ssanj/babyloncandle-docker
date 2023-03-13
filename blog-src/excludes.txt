@@ -1,0 +1,7 @@
+*.git*
+*.sh
+site
+excludes.txt
+_cache
+dist
+*.DS_Store*

@@ -1,0 +1,18 @@
+  <div class="page-content">
+      <div class="wrap">
+        <div class="home">
+
+          <h1>$postTitle$<span class="brace">|</span><span class="post-count">$postCount$</span></h1>
+
+          <ul class="posts">
+            $for(posts)$
+            <li>
+              <a class="post-link" href="$url$" onclick="ga('send', 'event', 'Posts', '$url$', '$title$');">$title$</a>
+              <span class="post-date">$date$</span>
+              <div class="post-tag">$tags$</div>
+            </li>
+            $endfor$
+          </ul>
+        </div>
+      </div>
+  </div>
