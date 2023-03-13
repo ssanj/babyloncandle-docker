@@ -1,8 +1,8 @@
 #!/bin/bash
 
-# docker compose run --rm --entrypoint 'bash -c "site clean && site rebuild"' blog
+docker compose run --rm --entrypoint 'bash -c "site clean && site rebuild"' blog
 
-# echo "Copying dist files into $BLOG_WEBSITE_DIR"
+echo "Copying dist files into $BLOG_WEBSITE_DIR"
 
 rsync -av \
       --checksum \
