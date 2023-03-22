@@ -331,7 +331,7 @@ img {
 .post pre code { border: none; }
 
 /* terminal */
-.post pre.terminal, .post pre.command {
+.post pre.terminal, .post pre.command, .post pre.config {
   border: 1px solid #000;
   background-color: #333;
   color: #FFF;
@@ -348,6 +348,11 @@ img {
 .post pre.command code {
   background-color: #333;
   color: #9dac92;
+}
+
+.post pre.config code {
+  background-color: #333;
+  color: #64e1e1;
 }
 
 
