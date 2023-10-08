@@ -50,6 +50,12 @@ Also use at your own risk; these steps worked for me and it may not work for you
 
 This is a summary of steps from various MakeMKV forums posts and the ["Ultra HAX0R" GUIDE V2 for encrypted firmware to Make your Drive UHD friendly](https://www.youtube.com/watch?v=jyQV1aPlbow) YouTube video.
 
+Before you start, ensure the value of your `Drive platform` is `MT1959`:
+
+```{.terminal .scrollx}
+Drive platform: MT1959
+```
+
 ## Steps
 
 1. Download and extract the [all you need firmware pack](https://www.makemkv.com/download/mk-firmware-pack-20200720.zip)
@@ -106,6 +112,30 @@ For example:
 
 ```{.terminal .scrollx}
 makemkvcon f -d /IOBDServices/8A6BA6DF help
+```
+
+You should see something similar to the following:
+
+```{.terminal .scrollx}
+MTK19xx firmware module v1.30
+
+Commands:
+
+  dump [auto|full|user]
+  Dumps firmware image
+    dump full      - dumps full rom image (if not disabled in firmware)
+    dump user      - dumps non-volatile user data
+    dump auto      - dumps full image if possible, user data otherwise
+
+  rawflash [<flag>,<flag=value>,...]
+    Sends the image and flashing flags to drive
+    for flashing in self-update mode
+  flags:
+    main           - flashes main firmware (this is the default)
+    full           - flashes boot loader and main firmware (Caution!!!)
+    de             - sets DE byte in image
+    enc            - encrypts firmware before sending to drive
+    slim           - force USB slim drive handshake
 ```
 
 8. Run the following command to flash the new firmware to your drive. Use the `enc` parameter if your drive is listed as having encrypted firmware as mentioned above. Check the forums if you're unsure about your drive.
