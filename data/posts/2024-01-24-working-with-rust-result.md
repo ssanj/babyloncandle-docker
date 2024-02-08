@@ -62,7 +62,7 @@ With a type alias like above, we don't have to constantly specify a type for a `
 
 ## Construction
 
-Let's look at how to constructor success and error values using `Result`. We mentioned that we use the `Ok` constructor for success values and the `Err` constructor
+Let's look at how to construct success and error values using `Result`. We mentioned that we use the `Ok` constructor for success values and the `Err` constructor
 for errors. Here's an example of using the constructors to validate that an age is twenty five:
 
 ```{.rust .scrollx}
@@ -131,8 +131,8 @@ In the above definition we get two functions: `D` and `F`. Both functions conver
 
 ```{.rust .scrollx}
 // pseudocode
-D: E -> U // Convert error value to a U
 F: T -> U // Convert success value to a U
+D: E -> U // Convert error value to a U
 ```
 
  `D` is used on the error value inside an `Err` instance and `F` is used on the success value inside an `Ok` instance. `map_or_else` has simply run a function on each data constructor (`Ok` and `Err`) to produce a result of the same type in all cases. This type of construct is also called a `fold` in some languages.
@@ -145,7 +145,7 @@ Another function in the same family of functions is `map_or`:
 pub fn map_or<U, F: FnOnce(T) -> U>(self, default: U, f: F) -> U {
     match self {
         Ok(t) => f(t),
-        Err(_) => default, // We ignore the value and return an default
+        Err(_) => default, // We ignore the value and return a default
     }
 }
 ```
@@ -154,13 +154,13 @@ In the above definition, a function `F` runs on the value inside the `Ok` instan
 
 ```{.rust .scrollx}
 // pseudocode
-D:   -> U // Return a U if in error
-F: T -> U // Convert success value to a U
+F      : T -> U // Convert success value to a U
+default:   -> U // Return a U if in error
 ```
 
 Notice that we completely ignore the value inside of the `Err` instance.
 
-`map_or` differs from `map_or_else`, in that it only takes a single function `F` and a default value to return in the `Err` case. This can be useful if you don't care about what the error case was and simple want to return some default value. Maybe this function should be renamed to `map_or_default`.
+`map_or` differs from `map_or_else`, in that it only takes a single function `F` and a default value to return in the `Err` case. This can be useful if you don't care about what the error case was and simple want to return some default value.
 
 
 ### Being unsafe
@@ -222,15 +222,15 @@ What if we wanted to customize the error message when we failed?
 We can do that by using `expect` method. `expect` is defined as:
 
 ```{.rust .scrollx}
-    pub fn expect(self, msg: &str) -> T
-    where
-        E: fmt::Debug,
-    {
-        match self {
-            Ok(t) => t,
-            Err(e) => unwrap_failed(msg, &e),
-        }
+pub fn expect(self, msg: &str) -> T
+where
+    E: fmt::Debug,
+{
+    match self {
+        Ok(t) => t,
+        Err(e) => unwrap_failed(msg, &e),
     }
+}
 ```
 
 Similar to the definition for `unwrap`, a success type of `T` is always returned or the function panics:
@@ -251,11 +251,11 @@ Ooops! Looks like you're not twenty five
 
 Panic-ing your program is probably the last thing you want to do; It's something you do when you have no other options. As such it's highly discouraged. Wouldn't it be better to calmly handle any errors and exit gracefully?
 
-But how do you do that? We've already seen some ways to do that with pattern matching and `map_or_else`. We can choose to do whatever we want to in each instance. There are other ways which we will look at next.
+But how do you do that? We've already seen some ways to do that with pattern matching, `map_or_else` and `map_or`. There are other ways which we will look at next.
 
 ### Making things safer with defaults and fallbacks
 
-One way we can `unwrap` a `Result` safely, is to provide a default value or function that returns a value of type `T` (The `Ok` type) when there is an `Err`.
+One way we can `unwrap` a `Result` safely, is to provide a default value or function, that returns a value of type `T` (The `Ok` type) when there is an `Err`.
 
 #### unwrap_or
 
@@ -270,7 +270,13 @@ pub fn unwrap_or(self, default: T) -> T {
 }
 ```
 
-We can see from the above definition that, we supply a default value of `T`. This default value will be used when there is an `Err`, the `Ok` value will be returned otherwise. This is very similar to [map_or](#map_or) but where we don't run a function on the success value.
+We can see from the above definition that, we supply a default value of `T`. This default value will be used when there is an `Err`, the `Ok` value will be returned otherwise. This is very similar to [map_or](#map_or) but where we don't run a function on the success value:
+
+```{.rust .scrollx}
+// pseudocode
+Ok(t)   ->  t       // Return value in Ok
+Err(e)  ->  default // Return default if in error
+```
 
 Here's an example of using `unwrap_or` to do just that:
 
@@ -290,6 +296,12 @@ pub fn unwrap_or_else<F: FnOnce(E) -> T>(self, op: F) -> T {
         Err(e) => op(e),
     }
 }
+```
+
+```{.rust .scrollx}
+// pseudocode
+Ok(t)   ->  t    -> T // Return value in Ok
+Err(e)  ->  F(e) -> T // Call F on the error
 ```
 
 This is very similar to the [map_or_else](#map_or_else) function but where a function is only applied to the error case and not the success case.
@@ -344,11 +356,17 @@ In the above definition, if a `Result` is an `Err` then the default instance of 
   result_err.unwrap_or_default(); // 0
 ```
 
-This is also very similar to the `unwrap_or` where we supply a default value for the error case. In `unwrap_or_default` the default value is derived from the `Default` instance.
+This is also very similar to the `unwrap_or` where we supply a default value for the error case. In `unwrap_or_default` the default value is derived from the `Default` instance for type `T`:
+
+```{.rust .scrollx}
+// pseudocode
+Ok(t)   ->  t  -> T // Return value in Ok
+Err(e)         -> T // Return Default instance for T
+```
 
 ## Transforming values within a Result
 
-What if you could run a function on the value within a `Result` and get a new `Result` back? Then you wouldn't have to do all the pesky unwrapping until when you actually needed the value.
+In the functions above, we extracted the success and error values out of a `Result`, thereby losing our `Result` "container". What if you could run a function on the value within a `Result` and stay within the `Result` "container"? Then you wouldn't have to do all the pesky unwrapping until when you actually needed the value.
 
 ### map
 
@@ -371,7 +389,7 @@ We can see from the above definition that, the supplied function `F` is only run
 F: T -> U // Convert success value to a U and return a Result<U, E>
 ```
 
-In either case the resulting `Result`is converted from a `Result<T, E>` to a `Result<U, E>`. It's important to note that we stay within a `Result` after running the function `F`. Here's a simple example demonstrating this:
+In either case the `Result`is converted from a `Result<T, E>` to a `Result<U, E>`. It's important to note that we stay within a `Result` after running the function `F`. Here's a simple example demonstrating this:
 
 ```{.rust .scrollx}
   let result_ok_1: Result<u32, String> = Ok(1);
@@ -383,10 +401,12 @@ In either case the resulting `Result`is converted from a `Result<T, E>` to a `Re
   let result_err_3: Result<String, String> = result_err_2.map(|n| format!("age: {}", n)); // Err("You have errors"), no change
 ```
 
+You can also think of the `map` function as of type: `Result<T -> U, E>`; as in it runs a function on the success side of `Result` leaving the error side untouched.
+
 
 ## Combining Results for fun and profit
 
-`Results` get really useful when you can combine multiple of them to give you one final `Result`.
+`Result` gets really useful when you can combine multiple of them to give you one final `Result`.
 
 ### and_then
 
@@ -410,7 +430,66 @@ F: T -> Result<U, E> // Converts a success value into another Result
 E -> E // Returns the error if there is one, essentially short-circuiting the combination.
 ```
 
-// TODO: Example
+Given the following function that parses a string to a `u32` or a [ParseIntError](file:///Users/sanj/.rustup/toolchains/stable-aarch64-apple-darwin/share/doc/rust/html/std/num/struct.ParseIntError.html):
+
+```{.rust .scrollx}
+use std::num::ParseIntError;
+use std::str::FromStr;
+
+fn parse_number(age: &str) -> Result<u32, ParseIntError> {
+  u32::from_str(age)
+}
+```
+
+we can try to perform a calculation on multiple numbers from strings:
+
+```{.rust .scrollx}
+let numbers_1: Result<u32, ParseIntError> = add_numbers("10", "20", "30"); // Ok(60)
+let numbers_2 = add_numbers("ten", "20", "30");    // Err(ParseIntError { kind: InvalidDigit })
+let numbers_3 = add_numbers("10", "twenty", "30"); // Err(ParseIntError { kind: InvalidDigit })
+let numbers_4 = add_numbers("10", "20", "thirty"); // Err(ParseIntError { kind: InvalidDigit })
+```
+
+Here's what `add_numbers` would look like:
+
+```{.rust .scrollx}
+fn add_numbers(one: &str, two: &str, three: &str) -> Result<u32, ParseIntError> {
+  parse_number(one) // try and get the first number. Returns Result<u32, ParseIntError>
+    .and_then(|n1| { // if that succeeds,
+      parse_number(two) // try and get the second number. Returns Result<u32, ParseIntError>
+        .and_then(|n2| { // if that succeeds
+          parse_number(three) // try and get the third number. Returns Result<u32, ParseIntError>
+            .map(|n3| n1 + n2 + n3) // if that succeeds, add up all the previous numbers. Returns Result<u32, ParseIntError>
+        })
+    })
+}
+```
+
+There seems to be a lot going on in the `add_numbers` function. Essentially, each time we call `parse_number` we get a `Result<u32, ParseIntError>`. If
+we want to keep going, we use `and_then` and call `parse_number` with the next number and so on. At the end we call `map` to complete the addition
+and return the result in a `Result<u32, ParseIntError>`. If you find this hard to follow, don't worry as there's a simpler way to do this.
+
+
+### The question mark operator
+
+Rust has the [question mark operator](https://doc.rust-lang.org/reference/expressions/operator-expr.html#the-question-mark-operator) (`?`) which allows you to simply
+return an error or extract a success value. You can think of it as an `unwrap` on `Ok` with an immediate return on `Err` instead of panic-ing. Here's the definition of
+`and_numbers_2` which uses the `?` operator:
+
+```{.rust .scrollx}
+fn add_numbers_2(one: &str, two: &str, three: &str) -> Result<u32, ParseIntError> {
+  let n1: u32 = parse_number(one)?;   // Get the number or return an Err
+  let n2: u32 = parse_number(two)?;   // Get the number or return an Err
+  let n3: u32 = parse_number(three)?; // Get the number or return an Err
+
+  // If we got here, all the numbers are valid
+  Ok(n1 + n2 + n3) // Add all the numbers and return an Ok
+}
+```
+
+It's important to note that if any of the `parse_number` function calls return an `Err`, the `add_numbers_2` function would return that `Err` as the final result instead of proceeding to the next line.
+
+We can see that the `add_numbers_2` function is easier to reason about than chaining together `and_then` and `map` calls in the `add_numbers` function. The `?` operator is supported for `Result` and `Option` types.
 
 ### and
 
