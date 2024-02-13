@@ -406,11 +406,11 @@ You can also think of the `map` function as of type: `Result<T -> U, E>`; as in 
 
 ## Combining Results for fun and profit
 
-`Result` gets really useful when you can combine multiple of them to give you one final `Result`.
+`Result` gets interesting when you need to combine multiple of them to give you one final `Result`.
 
 ### and_then
 
-This is really useful when you have multiple functions that return `Result`s and you want to know if all of them succeeded or any of them failed. `and_then` is defined as:
+Sometimes when you have multiple functions that return `Result`s, you want to know if all of them succeeded or any of them failed. `and_then` can help you there. `and_then` is defined as:
 
 ```{.rust .scrollx}
 pub fn and_then<U, F: FnOnce(T) -> Result<U, E>>(self, op: F) -> Result<U, E> {
@@ -421,11 +421,11 @@ pub fn and_then<U, F: FnOnce(T) -> Result<U, E>>(self, op: F) -> Result<U, E> {
 }
 ```
 
-From the above definition, the function `F` is run on the success value with an `Ok` instance. This is very similar to [map](#map). The main difference is that the function `F` returns another `Result` instead of another type.
+From the above definition, the function `F` is run on the success value within an `Ok` instance. This is very similar to [map](#map). The main difference is that the function `F` returns another `Result` instead of another type.
 
 ```{.rust .scrollx}
 // pseudocode
-// Give: Result<T, E>
+// Given: Result<T, E>
 F: T -> Result<U, E> // Converts a success value into another Result
 E -> E // Returns the error if there is one, essentially short-circuiting the combination.
 ```
@@ -441,7 +441,150 @@ fn parse_number(age: &str) -> Result<u32, ParseIntError> {
 }
 ```
 
-we can try to perform a calculation on multiple numbers from strings:
+Let's try and parse a string number with `parse_number` and multiply its value by 2:
+
+```{.rust .scrollx}
+parse_number("10")
+    .and_then(|ten| {
+        // We have successfully parsed "10" into 10.
+        let new_result = ten * 2; // Multiply by 2
+        todo!() // What do we return here?
+    })
+```
+
+Given that we know we have to use a function that also returns a `Result` from `and_then`:
+
+```{.rust .scrollx}
+parse_number("10")
+    .and_then(|ten| {
+        // We have successfully parsed "10" into 10.
+        let new_result = ten * 2 // Multiply by 2
+        Ok(new_result) // Result<u32, ParseIntError>
+    })
+```
+
+If we want to fail our calculation for some reason we can return an `Err`:
+
+```{.rust .scrollx}
+struct MyError(String);
+
+parse_number("10")
+.and_then(|one| {
+    // We have successfully parsed "10" into 10.
+    parse_number("20")
+      .and_then(|two| {
+          // We have successfully parsed "20" into 20.
+          // but we don't like even numbers...
+          if two % 2 == 0 {
+              Err(MyError("I don't add even numbers".to_owned()))
+          } else {
+              Ok(one + two)
+          }
+      })
+})
+```
+
+But we can an error!:
+
+```{.terminal .scrollx}
+error[E0308]: mismatched types
+   --> src/main.rs:86:23
+    |
+86  |                   Err(MyError("I don't add even numbers".to_owned()))
+    |                   --- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `ParseIntError`, found `MyError`
+    |                   |
+    |                   arguments to this enum variant are incorrect
+    |
+help: the type constructed contains `MyError` due to the type of the argument passed
+   --> src/main.rs:86:19
+    |
+86  |                   Err(MyError("I don't add even numbers".to_owned()))
+    |                   ^^^^----------------------------------------------^
+    |                       |
+    |                       this argument influences the type of `Err`
+```
+
+which points to the real cause:
+
+> expected `ParseIntError`, found `MyError`
+
+
+What this means is that when you are chaining `Result`s through `and_then` functions, all the `Err` types need to be the same. We can change the `Ok` type as
+much as we want but we have to `align` the errors. This is just something to keep in mind when using `Result`. If you have functions that return `Result`s with different
+`Err` types, you can create a common error type and convert each error into that type using something like `map_err`, which we will cover later.
+
+// TODO: Add an example
+
+What if we want to parse two numbers and add them together?
+
+```{.rust .scrollx}
+parse_number("10")
+  .and_then(|ten| {
+      // We have successfully parsed "10" into 10.
+      parse_number("20")
+        .and_then(|twenty| {
+          // We have successfully parsed "20" into 20.
+          // What do we return here?
+          todo!()
+        })
+  })
+```
+
+We could return a `Result` like before:
+
+```{.rust .scrollx}
+parse_number("10")
+  .and_then(|ten| {
+      // We have successfully parsed "10" into 10.
+      parse_number("20")
+        .and_then(|twenty| {
+            // We have successfully parsed "20" into 20.
+            Ok(ten + twenty)
+        })
+  })
+```
+
+We could also just `map` over the last function that returns a `Result`:
+
+```{.rust .scrollx}
+parse_number("10")
+  .and_then(|ten| {
+      // We have successfully parsed "10" into 10.
+      parse_number("20")
+        .map(|twenty| { // We map here
+            // We have successfully parsed "20" into 20.
+            ten + twenty // We didn't have to wrap the answer in a Result, because we are 'in' a Result
+        })
+  })
+```
+
+Reminder about `map`s definition:
+
+```{.rust .scrollx}
+pub fn map<U, F: FnOnce(T) -> U>(self, op: F) -> Result<U, E> {
+    match self {
+        Ok(t) => Ok(op(t)),
+        Err(e) => Err(e),
+    }
+}
+```
+
+in summary:
+
+```{.rust .scrollx}
+// pseudocode
+// Given a Result<T, E>
+F: T -> U // Convert success value to a U and return a Result<U, E>
+```
+
+We can see that after we apply the function `F`, we still return a `Result`. This is why we can use `map` within an `and_then` call.
+
+So when do we use `and_then` when chaining `Result`s and when do we use `map`?
+
+If you need to make a decision about whether to fail or not, then use `and_then` because you
+can return an `Ok` to succeed or an `Err` to fail. If you simply want to work on a the `Ok` side of a previous `Result`, then use `map`.
+
+Lets try to perform a calculation on multiple numbers parsed from strings:
 
 ```{.rust .scrollx}
 let numbers_1: Result<u32, ParseIntError> = add_numbers("10", "20", "30"); // Ok(60)
@@ -465,9 +608,8 @@ fn add_numbers(one: &str, two: &str, three: &str) -> Result<u32, ParseIntError> 
 }
 ```
 
-There seems to be a lot going on in the `add_numbers` function. Essentially, each time we call `parse_number` we get a `Result<u32, ParseIntError>`. If
-we want to keep going, we use `and_then` and call `parse_number` with the next number and so on. At the end we call `map` to complete the addition
-and return the result in a `Result<u32, ParseIntError>`. If you find this hard to follow, don't worry as there's a simpler way to do this.
+This is similar what we did with two numbers parsed from `Result`. But as we can see this is quickly becoming hard to reason about.
+Luckily Rust gives you a simpler way to do this.
 
 
 ### The question mark operator
@@ -489,7 +631,7 @@ fn add_numbers_2(one: &str, two: &str, three: &str) -> Result<u32, ParseIntError
 
 It's important to note that if any of the `parse_number` function calls return an `Err`, the `add_numbers_2` function would return that `Err` as the final result instead of proceeding to the next line.
 
-We can see that the `add_numbers_2` function is easier to reason about than chaining together `and_then` and `map` calls in the `add_numbers` function. The `?` operator is supported for `Result` and `Option` types.
+We can see that the `add_numbers_2` function is easier to reason about than chaining together `and_then` and `map` calls in the `add_numbers` function. The `?` operator is supported for `Result` and `Option` types at the moment.
 
 ### and
 
