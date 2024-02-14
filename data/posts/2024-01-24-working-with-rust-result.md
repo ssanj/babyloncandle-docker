@@ -635,7 +635,7 @@ We can see that the `add_numbers_2` function is easier to reason about than chai
 
 ### and
 
-`and` is similar to `and_then` except a default `Result` is used on an `Ok` instance and the error is returned on an `Err` instance:
+`and` is similar to `and_then` except a default `Result` is returned on an `Ok` instance:
 
 ```{.rust .scrollx}
 pub fn and<U>(self, res: Result<U, E>) -> Result<U, E> {
@@ -646,9 +646,49 @@ pub fn and<U>(self, res: Result<U, E>) -> Result<U, E> {
 }
 ```
 
-This can be useful when you only want to know if something succeeded instead of needing to work on its value.
+Notice that the value inside the `Ok` instance is never used:
 
-// TODO: Example
+```{.rust .scrollx}
+Ok(_) => res,
+```
+
+This can be useful when you only want to know if something succeeded or failed instead of needing to work on its value.
+
+Take creating a directory and then creating a file in that directory only if the directory creation succeeded, as an example use case.
+
+We can create a directory with the `create_dir` function from the `std::fs` module:
+
+```{.rust .scrollx}
+fn create_dir<P: AsRef<Path>>(path: P) -> io::Result<()>
+```
+
+Notice how this function returns a `Result` with a `Unit` as the success value.
+
+We can create a file with the `create` function on the `std::fs::File` struct:
+
+```{.rust .scrollx}
+fn create<P: AsRef<Path>>(path: P) -> io::Result<File>
+```
+
+If we use `and_then` to complete the example use case:
+
+```{.rust .scrollx}
+fn create_directory_and_then_file(dir_path: &Path, file_name: &str) -> io::Result<File> {
+  create_dir(dir_path)
+    .and_then(|_| { // We ignore the value from create_dir
+      File::create(dir_path.join(file_name))
+    }) // Result<File>
+}
+```
+
+we can see that we have to ignore the previous success value in `and_then`. This is a little verbose and we can trim it down with `and`:
+
+```{.rust .scrollx}
+fn create_directory_and_file(dir_path: &Path, file_name: &str) -> io::Result<File> {
+  create_dir(dir_path)
+    .and(File::create(dir_path.join(file_name)))  // Result<File>
+}
+```
 
 ### or
 
