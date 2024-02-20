@@ -436,8 +436,8 @@ Given the following function that parses a string to a `u32` or a [ParseIntError
 use std::num::ParseIntError;
 use std::str::FromStr;
 
-fn parse_number(age: &str) -> Result<u32, ParseIntError> {
-  u32::from_str(age)
+fn parse_number(value: &str) -> Result<u32, ParseIntError> {
+  u32::from_str(value)
 }
 ```
 
@@ -692,6 +692,8 @@ fn create_directory_and_file(dir_path: &Path, file_name: &str) -> io::Result<Fil
 
 ### or
 
+If you wanted to try an alternative `Result` on `Err` and you didn't care about the error value, you could use `or`. `or` is defined as:
+
 ```{.rust .scrollx}
   pub fn or<F>(self, res: Result<T, F>) -> Result<T, F> {
       match self {
@@ -699,6 +701,76 @@ fn create_directory_and_file(dir_path: &Path, file_name: &str) -> io::Result<Fil
           Err(_) => res,
       }
   }
+```
+
+From the above definition we can see that the value `res` is used only when there is an `Err` instance. If the `Result` is an `Ok` instance, its value
+is returned.
+
+in summary:
+
+```{.rust .scrollx}
+// pseudocode
+// Given a Result<T, E>
+Err(_) -> res:Result<T, F>  -> Result<T, F> // Notice that the `Err` type can change from `E` to `F`
+Ok(t)  -> Ok(t)             -> Result<T, F>
+```
+
+Here's an example of where we can try one of several parse functions until we find one that succeeds.
+
+Given a common error type `MyError` and a common success type `MyResult`:
+
+
+```{.rust .scrollx}
+#[derive(Debug)]
+struct MyError(String);
+
+#[derive(Debug)]
+enum MyResult {
+  N(u32),
+  B(bool),
+  S(String),
+}
+```
+
+and a function to parse numbers and parse booleans:
+
+```{.rust .scrollx}
+fn parse_number(value: &str) -> Result<u32, ParseIntError> {
+  u32::from_str(value)
+}
+
+fn parse_bool(value: &str) -> Result<bool, ParseBoolError> {
+  bool::from_str(value)
+}
+```
+
+One thing to note is that both functions return different error types in `Err`: `ParseIntError` and `ParseBoolError` respectively.
+
+How would we combine these functions into parsing a string slice into a type of `MyResult`? We also need to convert each `Err` type
+into `MyError` as we need a common error type, as mentioned before.
+
+Here's one way we could do it:
+
+```{.rust .scrollx}
+fn parse_my_result(value: &str) -> Result<MyResult, MyError> {
+  parse_number(value)
+    .map(|n| MyResult::N(n)) // map success type to the common MyResult type
+    .or(
+      parse_bool(value)
+        .map(|b| MyResult::B(b)) // map success type to the common MyResult type
+    )
+    .or(
+      Ok(MyResult::S(value.to_owned())) // default success value
+    )
+}
+```
+
+We could use it like:
+
+```{.terminal .scrollx}
+let r1: Result<MyResult, MyError> = parse_my_result("123"); // Ok(N(123))
+let r2: Result<MyResult, MyError> = parse_my_result("true"); // Ok(B(true))
+let r3: Result<MyResult, MyError> = parse_my_result("something"); //Ok(S("something"))
 ```
 
 ### or_else (lazy)
