@@ -712,8 +712,10 @@ in summary:
 // pseudocode
 // Given a Result<T, E>
 Err(_) -> res:Result<T, F>  -> Result<T, F> // Notice that the `Err` type can change from `E` to `F`
-Ok(t)  -> Ok(t)             -> Result<T, F>
+Ok(t)  -> Ok(t)             -> Result<T, F> // `Ok` type is fixed: `T`
 ```
+
+It's important to note that `res` dictates the final `Err` type returned from `or` and that type inside the `Ok` constructor doesn't change. We'll see that come into play in the example below.
 
 Here's an example of where we can try one of several parse functions until we find one that succeeds.
 
@@ -744,36 +746,74 @@ fn parse_bool(value: &str) -> Result<bool, ParseBoolError> {
 }
 ```
 
-One thing to note is that both functions return different error types in `Err`: `ParseIntError` and `ParseBoolError` respectively.
+One thing to note is that both functions return different error types in `Err`: `ParseIntError` and [ParseBoolError](file:///Users/sanj/.rustup/toolchains/stable-aarch64-apple-darwin/share/doc/rust/html/std/str/struct.ParseBoolError.html) respectively.
 
-How would we combine these functions into parsing a string slice into a type of `MyResult`? We also need to convert each `Err` type
-into `MyError` as we need a common error type, as mentioned before.
+How would we combine these functions into parsing a string slice into a type of `MyResult`? Oh, and we also don't support converting a string that is all caps into `MyResult`. That would be an error.
+
+`Note` that we don't need to align the error types here as mentioned before because the `Result` passed to `or` would change the final `Err` type as required.
 
 Here's one way we could do it:
 
 ```{.rust .scrollx}
 fn parse_my_result(value: &str) -> Result<MyResult, MyError> {
-  parse_number(value)
-    .map(|n| MyResult::N(n)) // map success type to the common MyResult type
+  parse_number(value) // Result<u32, ParseIntError>
+    .map(|n| MyResult::N(n)) // Result<MyResult, ParseIntError>
     .or(
-      parse_bool(value)
-        .map(|b| MyResult::B(b)) // map success type to the common MyResult type
-    )
+      parse_bool(value) // Result<u32, ParseBoolError>
+        .map(|b| MyResult::B(b))
+    ) // Result<u32, ParseBoolError>
     .or(
-      Ok(MyResult::S(value.to_owned())) // default success value
-    )
+      if value.to_uppercase() == value {
+          // We don't support full caps
+          Err(MyError(format!("We don't support screaming case: {}", value))) // Result<MyResult, MyError>
+       } else {
+        Ok(MyResult::S(value.to_owned())) // Result<MyResult, MyError>
+       }
+    ) // Result<MyResult, MyError>
 }
 ```
 
 We could use it like:
 
-```{.terminal .scrollx}
+```{.rust .scrollx}
 let r1: Result<MyResult, MyError> = parse_my_result("123"); // Ok(N(123))
 let r2: Result<MyResult, MyError> = parse_my_result("true"); // Ok(B(true))
 let r3: Result<MyResult, MyError> = parse_my_result("something"); //Ok(S("something"))
+  let r4: Result<MyResult, MyError> = parse_my_result("HELLO"); //Err(MyError("We don't support screaming case: HELLO"))
 ```
 
-### or_else (lazy)
+How the `Err` type changed between `ParseIntError`, `ParseBoolError` to `MyError` can be a bit harder to see. Here's a more detailed example of the above:
+
+```{.rust .scrollx}
+fn parse_my_result_2(value: &str) -> Result<MyResult, MyError> {
+  let p1: Result<MyResult, ParseIntError> =
+    parse_number(value)
+      .map(|n| MyResult::N(n));
+
+  let p2: Result<MyResult, ParseBoolError> =
+    parse_bool(value)
+      .map(|b| MyResult::B(b));
+
+  let p3: Result<MyResult, MyError> =
+    if value.to_uppercase() == value {
+        // We don't support full caps
+        Err(MyError(format!("We don't support screaming case: {}", value)))
+     } else {
+      Ok(MyResult::S(value.to_owned()))
+     };
+
+    let r1: Result<MyResult, ParseBoolError> = p1.or(p2); // p2's type wins
+    let r2: Result<MyResult, MyError> = r1.or(p3); // p3's type wins
+
+    r2
+}
+```
+
+The function `res`, passed to `or` dictates the final `Err` type. Also when chaining multiple `or` calls, the final `res` block dictates the final `Result` type. In the case of `or` chaining, the `Ok` type is fixed but the `Err` type can vary!
+
+### or_else
+
+`or_else` is similar to `or` with the exception that you get access to the error type `E`:
 
 
 ```{.rust .scrollx}
@@ -785,6 +825,24 @@ let r3: Result<MyResult, MyError> = parse_my_result("something"); //Ok(S("someth
   }
 ```
 
+The function `op` takes in the `Err` type `E` and returns a `Result` with the same success type `T` and a new error type `F`:
+
+```{.rust .scrollx}
+FnOnce(E) -> Result<T, F>
+```
+
+In summary:
+
+```{.rust .scrollx}
+// pseudocode
+// Given a Result<T, E>
+Err(e:E) -> op(e)  -> Result<T, F> // `Err` type goes from `E` -> `F`
+Ok(t:T)  -> Ok(t)  -> Result<T, F> // `Ok` type is fixed: `T`
+```
+
+This can be useful when you need access to the error to make a decision about the result to return.
+
+// TODO: Add an example
 
 
 ## Working with errors
