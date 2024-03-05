@@ -847,17 +847,45 @@ This can be useful when you need access to the error to make a decision about th
 
 ## Working with errors
 
+
 ### map_err
 
+You often need to map the error type on `Result` to another. To do so we can use the `map_err` function:
+
 ```{.rust .scrollx}
-  pub fn map_err<F, O: FnOnce(E) -> F>(self, op: O) -> Result<T, F> {
-      match self {
-          Ok(t) => Ok(t),
-          Err(e) => Err(op(e)),
-      }
+pub fn map_err<F, O: FnOnce(E) -> F>(self, op: O) -> Result<T, F> {
+  match self {
+      Ok(t) => Ok(t),
+      Err(e) => Err(op(e)),
   }
+}
 ```
+
+In summary:
+
+```{.rust .scrollx}
+// pseudocode
+// Given a Result<T, E>
+Err(e:E) -> op(e)  -> F  -> Result<T, F>  // `Err` type goes from `E` -> `F` and is wrapped in an `Err`
+Ok(t:T)  -> Ok(t)        -> Result<T, F> // `Ok` type is fixed: `T`
+```
+
+Here's an example where we need to convert a `ParseBoolError` type to `MyError`:
+
+```{.rust .scrollx}
+fn bool_as_my_error(value: &str) -> Result<bool, MyError> {
+  parse_bool(value)
+    .map_err(|e| MyError(e.to_string())) //Convert ParseBoolError -> MyError
+}
+```
+
+`map_err` is useful when you need to align all the error types to a single type like when using the question mark operator or
+when using functions like `and_then`.
+
 ### unwrap_err
+
+`unwrap_err` gives you access to the error inside an `Err` instance and panics on an `Ok` instance. This is an unsafe function
+and should be used only when you know for certain that you have an `Err` or don't care (like maybe in a test function, where you want the test to fail).
 
 ```{.rust .scrollx}
 pub fn unwrap_err(self) -> E
@@ -871,63 +899,190 @@ where
 }
 ```
 
+In summary:
+
+```{.rust .scrollx}
+// pseudocode
+// Given a Result<T, E>
+Err(e:E) -> E  // Returns the error in an Err
+Ok(_)  -> panic // Panics on any Ok value
+```
+
+For example, if we try to unwrap a success value:
+
+```{.rust .scrollx}
+parse_bool("true").unwrap_err() //panics - called `Result::unwrap_err()` on an `Ok` value: true
+```
+
+when used on an error:
+
+```{.rust .scrollx}
+parse_bool("ten").unwrap_err() //ParseBoolError
+```
 
 ## Conversions to Option
 
 ### ok
 
+Sometimes it's useful to convert a `Result` to an `Option`. `ok` maps an `Ok` instance to a `Some` instance and an `Err`
+instance to a `None`:
+
 ```{.rust .scrollx}
-  pub fn ok(self) -> Option<T> {
-      match self {
-          Ok(x) => Some(x),
-          Err(_) => None,
-      }
+pub fn ok(self) -> Option<T> {
+  match self {
+      Ok(x) => Some(x),
+      Err(_) => None,
   }
+}
 ```
+
+In summary:
+
+```{.rust .scrollx}
+// pseudocode
+// Given a Result<T, E>
+Ok(t:T) -> Some(t) // Option<T>
+Err(_)  -> None    // Option<T>
+```
+
+TODO: Add a filter_map example
 
 ### err
 
+This is the opposite of `ok` where we reverse the mappings, going from an `Ok` instance to `None` and `Err` instance to
+`Some`:
+
 ```{.rust .scrollx}
-    pub fn err(self) -> Option<E> {
-        match self {
-            Ok(_) => None,
-            Err(x) => Some(x),
-        }
-    }
+pub fn err(self) -> Option<E> {
+  match self {
+      Ok(_) => None,
+      Err(x) => Some(x),
+  }
+}
+```
+
+In summary:
+
+```{.rust .scrollx}
+// pseudocode
+// Given a Result<T, E>
+Err(e:E) -> Some(e) // Option<E>
+Ok(_)    -> None    // Option<E>
 ```
 
 ### transpose
 
+If we have a `Result` with an `Option` value inside an `Ok` instance, we can use `transpose` to convert it to an `Option`
+with a `Result` as the `Some` instance! `Result` has an `impl` of `Result<Option<T>, E>` that defines the `transpose` function:
+
 ```{.rust .scrollx}
-  impl<T, E> Result<Option<T>, E>
+impl<T, E> Result<Option<T>, E> {
 
   pub const fn transpose(self) -> Option<Result<T, E>> {
-      match self {
-          Ok(Some(x)) => Some(Ok(x)),
-          Ok(None) => None,
-          Err(e) => Some(Err(e)),
-      }
+    match self {
+      Ok(Some(x)) => Some(Ok(x)),
+      Ok(None) => None,
+      Err(e) => Some(Err(e)),
+    }
   }
+}
 ```
+
+In summary:
+
+```{.rust .scrollx}
+// pseudocode
+// Given a Result<Option<T>, E>
+Ok(Some(t:T))  -> Some(Ok(t))    // Option<Result<T, E>>
+Ok(None)       -> None           // Option<Result<T, E>>
+Err(e:E)       -> Some(Err(e))   // Option<Result<T, E>>
+```
+
+We are basically flipping the containers; going from `Result<Option<T>, E>` to a `Option<Result<T, E>>`. In some FP languages,
+this is referred to as [traverse](https://hackage.haskell.org/package/base-4.19.1.0/docs/Data-Traversable.html#v:traverse). But why is this useful?
+
+This can be useful when you have a one or more `Result<Option<T>, E>` and want to know if all the inner `Option` types are
+valid `Some` instances:
+
+// TODO: add an example
 
 
 ## Value tests
 
 ### is_ok
 
+When you need to just know if some execution was successful and don't need to know the value, you can use `is_ok`:
+
 ```{.rust .scrollx}
-  pub const fn is_ok(&self) -> bool {
-      matches!(*self, Ok(_))
-  }
+pub const fn is_ok(&self) -> bool {
+  matches!(*self, Ok(_))
+}
+```
+
+[matches!](file:///Users/sanj/.rustup/toolchains/stable-aarch64-apple-darwin/share/doc/rust/html/std/macro.matches.html) is a macro that tests if a value matches a given pattern, returning a bool value to indicate success and failure.
+
+In summary:
+
+```{.rust .scrollx}
+// pseudocode
+// Given a Result<T, E>
+Ok(_)  -> true    // bool
+Err(_) -> false // bool
+```
+
+For example:
+
+```{.rust .scrollx}
+parse_bool("ten").is_ok();  // false
+parse_bool("true").is_ok(); // true
+```
+
+we could use this function when testing for conditions:
+
+```{.rust .scrollx}
+if parse_bool(value).is_ok() {
+  //do something when we have booleans
+} else {
+  //do something when we don't have booleans
+}
 ```
 
 ### is_err
 
+This is similar to `is_ok` but in reverse:
+
 ```{.rust .scrollx}
-  pub const fn is_err(&self) -> bool {
-      !self.is_ok()
-  }
+pub const fn is_err(&self) -> bool {
+  !self.is_ok()
+}
 ```
+
+In summary:
+
+```{.rust .scrollx}
+// pseudocode
+// Given a Result<T, E>
+Ok(_)  -> false  // bool
+Err(_) -> true   // bool
+```
+
+For example:
+
+```{.rust .scrollx}
+parse_bool("ten").is_err();  // true
+parse_bool("true").is_err(); // false
+```
+
+In a conditional as before:
+
+```{.rust .scrollx}
+if parse_bool(value).is_err() {
+  //do something when we don't have booleans
+} else {
+  //do something when we have booleans
+}
+```
+
 
 ### is_ok_and
 
