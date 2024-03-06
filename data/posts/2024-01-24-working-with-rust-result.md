@@ -973,7 +973,7 @@ Ok(_)    -> None    // Option<E>
 ### transpose
 
 If we have a `Result` with an `Option` value inside an `Ok` instance, we can use `transpose` to convert it to an `Option`
-with a `Result` as the `Some` instance! `Result` has an `impl` of `Result<Option<T>, E>` that defines the `transpose` function:
+with a `Result` within the `Some` instance! `Result` has an `impl` of `Result<Option<T>, E>` that defines the `transpose` function:
 
 ```{.rust .scrollx}
 impl<T, E> Result<Option<T>, E> {
@@ -999,7 +999,7 @@ Err(e:E)       -> Some(Err(e))   // Option<Result<T, E>>
 ```
 
 We are basically flipping the containers; going from `Result<Option<T>, E>` to a `Option<Result<T, E>>`. In some FP languages,
-this is referred to as [traverse](https://hackage.haskell.org/package/base-4.19.1.0/docs/Data-Traversable.html#v:traverse). But why is this useful?
+this is referred to as [sequence](https://hackage.haskell.org/package/base-4.19.1.0/docs/Data-Traversable.html#v:sequence). But why is this useful?
 
 This can be useful when you have a one or more `Result<Option<T>, E>` and want to know if all the inner `Option` types are
 valid `Some` instances:
@@ -1026,7 +1026,7 @@ In summary:
 ```{.rust .scrollx}
 // pseudocode
 // Given a Result<T, E>
-Ok(_)  -> true    // bool
+Ok(_)  -> true  // bool
 Err(_) -> false // bool
 ```
 
@@ -1086,26 +1086,75 @@ if parse_bool(value).is_err() {
 
 ### is_ok_and
 
+`is_ok_and` lets you test a `Result` is `Ok` and runs a predicate on the value inside the `Ok` instance. `is_ok_and` is defined as:
+
 ```{.rust .scrollx}
-  pub fn is_ok_and(self, f: impl FnOnce(T) -> bool) -> bool {
-      match self {
-          Err(_) => false,
-          Ok(x) => f(x),
-      }
+pub fn is_ok_and(self, f: impl FnOnce(T) -> bool) -> bool {
+  match self {
+    Err(_) => false,
+    Ok(x) => f(x),
   }
+}
 ```
+
+We can see from the above definition that the predicate function `f` is only called on the value inside the `Ok` instance, converting it to a boolean value. If the `Result` is an instance of `Err` the value `false` is returned.
+
+In summary:
+
+```{.rust .scrollx}
+// pseudocode
+// Given a Result<T, E>
+f: T    -> bool
+Ok(t:T) -> f(t)   -> true|false  // bool
+Err(_)  -> false                 // bool
+```
+
+A simple example is testing whether a number is greater than 10:
+
+```{.rust .scrollx}
+parse_int("11").is_ok_and(|n| n > 10)   // true
+parse_int("2").is_ok_and(|n| n > 10)    // false
+parse_int("blah").is_ok_and(|n| n > 10) // false
+```
+
 
 ### is_err_and
 
+`is_err_and` is the opposite of `is_ok_and` in that it lets you test a `Result` is an `Err` and runs a predicate on the value inside the `Err` instance. `is_err_and` is defined as:
+
+
 ```{.rust .scrollx}
-  pub fn is_err_and(self, f: impl FnOnce(E) -> bool) -> bool {
-      match self {
-          Ok(_) => false,
-          Err(e) => f(e),
-      }
+pub fn is_err_and(self, f: impl FnOnce(E) -> bool) -> bool {
+  match self {
+    Ok(_) => false,
+    Err(e) => f(e),
   }
+}
 ```
 
+We can see from the above definition that the predicate function `f` is only called on the value inside the `Err` instance, converting it to a boolean value. If the `Result` is an instance of `Ok` the value `false` is returned.
+
+In summary:
+
+```{.rust .scrollx}
+// pseudocode
+// Given a Result<T, E>
+f: E     -> bool
+Ok(_)            -> false        // bool
+Err(e:E) -> f(e) -> true|false   // bool
+```
+
+A simple example to testing whether a number is an invalid digit:
+
+```{.rust .scrollx}
+  parse_number("2")
+    .map_err(|e| MyError(e.to_string()))
+    .is_err_and(|MyError(error)| error.contains("invalid digit")); // false
+
+  parse_number("blah")
+    .map_err(|e| MyError(e.to_string()))
+    .is_err_and(|MyError(error)| error.contains("invalid digit")); // true
+```
 
 ### References
 
