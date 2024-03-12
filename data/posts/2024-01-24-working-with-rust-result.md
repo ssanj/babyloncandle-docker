@@ -1041,9 +1041,37 @@ We are basically flipping the containers; going from `Result<Option<T>, E>` to a
 this is referred to as [sequence](https://hackage.haskell.org/package/base-4.19.1.0/docs/Data-Traversable.html#v:sequence). But why is this useful?
 
 This can be useful when you have a one or more `Result<Option<T>, E>` and want to know if all the inner `Option` types are
-valid `Some` instances:
+valid `Some` instances. For example, to retrieve only even numbers or any parse errors we could use:
 
-// TODO: add an example
+```{.rust .scrollx}
+  let maybe_numbers_2 =
+    vec![
+      "1",
+      "2",
+      "three",
+      "4",
+      "5",
+      "6",
+      "se7en",
+    ];
+
+    maybe_numbers_2
+      .iter()
+      .filter_map(|maybe_number| {
+          parse_number(maybe_number)
+            .map(|n| {
+              if n % 2 == 0 {
+                Some(n)
+              } else {
+                None
+              }
+            })
+            .transpose()
+      })
+      .collect::<Vec<_>>()
+
+    // [Ok(2), Err(ParseIntError { kind: InvalidDigit }), Ok(4), Ok(6), Err(ParseIntError { kind: InvalidDigit })]
+```
 
 
 ## Value tests
@@ -1197,78 +1225,119 @@ A simple example to testing whether a number is an invalid digit:
 
 ### References
 
+The following methods work on references to the type `T` within `Result<T, E>`.
+
 ### copied
 
-for `impl<T, E> Result<&T, E>`
+`copied` converts a `Result<&T, E>` with a borrow of `T` into to a `Result<T, E>`. `copied` is implemented as:
+
 
 ```{.rust .scrollx}
+impl<T, E> Result<&T, E> {
+
   pub fn copied(self) -> Result<T, E>
   where
       T: Copy,
   {
       self.map(|&t| t)
   }
+}
 ```
 
-for `impl<T, E> Result<&mut T, E>`
+From the above definition, for this method to work, `T` needs to have an implementation of the `Copy` trait.
+
+Here's an example from the Rust [docs](https://doc.rust-lang.org/std/result/enum.Result.html#method.copied) that use `copied`:
 
 ```{.rust .scrollx}
-  pub fn copied(self) -> Result<T, E>
-  where
-      T: Copy,
-  {
-      self.map(|&mut t| t)
-  }
+let val = 12;
+let x: Result<&i32, i32> = Ok(&val);
+assert_eq!(x, Ok(&12));
+let copied = x.copied();
+assert_eq!(copied, Ok(12));
 ```
 
 ### cloned
 
-for `impl<T, E> Result<&T, E>`
+`cloned` converts a `Result<&T, E>` with a clone of `T` into to a `Result<T, E>`. `clone` is implemented as:
 
 ```{.rust .scrollx}
+impl<T, E> Result<&T, E> {
+
   pub fn cloned(self) -> Result<T, E>
   where
       T: Clone,
   {
       self.map(|t| t.clone())
   }
+}
 ```
 
-for `impl<T, E> Result<&mut T, E>`
+Here's an example from the Rust [docs](https://doc.rust-lang.org/std/result/enum.Result.html#method.cloned) that use `cloned`:
 
 ```{.rust .scrollx}
-  pub fn cloned(self) -> Result<T, E>
-  where
-      T: Clone,
-  {
-      self.map(|t| t.clone())
-  }
+let val = 12;
+let x: Result<&i32, i32> = Ok(&val);
+assert_eq!(x, Ok(&12));
+let cloned = x.cloned();
+assert_eq!(cloned, Ok(12));
 ```
 
 ### as_ref
 
-for `impl<T, E> Result<T, E>`
+`as_ref` converts a `Result<T, E>` into a `Result<&T, &E>`, returning references to both `T` and `E`. `as_ref` is implemented as:
 
 ```{.rust .scrollx}
+impl<T, E> Result<T, E> {
   pub const fn as_ref(&self) -> Result<&T, &E> {
       match *self {
           Ok(ref x) => Ok(x),
           Err(ref x) => Err(x),
       }
   }
+}
+```
+
+For example:
+
+```{.rust .scrollx}
+let n20: Result<u32, ParseIntError> = parse_number("20");
+let n20_refs: Result<&u32, &ParseIntError> = n20.as_ref();
 ```
 
 ### as_mut
 
-for `impl<T, E> Result<T, E>`
+`as_ref` converts a `Result<T, E>` into a `Result<&mut T, &mut E>`, returning mutable references to both `T` and `E`. `as_mut` is implemented as:
 
 ```{.rust .scrollx}
+impl<T, E> Result<T, E> {
   pub const fn as_mut(&mut self) -> Result<&mut T, &mut E> {
       match *self {
           Ok(ref mut x) => Ok(x),
           Err(ref mut x) => Err(x),
       }
   }
+}
+```
+
+Here's an example from the Rust [docs](https://doc.rust-lang.org/std/result/enum.Result.html#method.as_mut) that use `as_mut`:
+
+TODO: Write an example
+
+```{.rust .scrollx}
+fn mutate(r: &mut Result<i32, i32>) {
+    match r.as_mut() {
+        Ok(v) => *v = 42,
+        Err(e) => *e = 0,
+    }
+}
+
+let mut x: Result<i32, i32> = Ok(2);
+mutate(&mut x);
+assert_eq!(x.unwrap(), 42);
+
+let mut x: Result<i32, i32> = Err(13);
+mutate(&mut x);
+assert_eq!(x.unwrap_err(), 0);
 ```
 
 ### as_deref
@@ -1283,6 +1352,59 @@ for `impl<T, E> Result<T, E>`
       self.as_ref().map(|t| t.deref())
   }
 ```
+
+### Mutable references
+
+The following methods work on references to the type `&mut T` within `Result<T, E>`.
+
+### copied
+
+`copied` converts a `Result<&mut T, E>` with a mutable borrow of `T` into to a `Result<T, E>`. `copied` is implemented as:
+
+```{.rust .scrollx}
+impl<T, E> Result<&mut T, E> {
+  pub fn copied(self) -> Result<T, E>
+  where
+      T: Copy,
+  {
+      self.map(|&mut t| t)
+  }
+}
+```
+
+Here's an example from the Rust [docs](https://doc.rust-lang.org/std/result/enum.Result.html#method.copied-1) that use `copied`:
+
+```{.rust .scrollx}
+let mut val = 12;
+let x: Result<&mut i32, i32> = Ok(&mut val);
+assert_eq!(x, Ok(&mut 12));
+let copied = x.copied();
+assert_eq!(copied, Ok(12));
+```
+
+### cloned
+
+`cloned` converts a `Result<&mut T, E>` with a mutable borrow of `T` into to a `Result<T, E>`. `clone` is implemented as:
+
+```{.rust .scrollx}
+  pub fn cloned(self) -> Result<T, E>
+  where
+      T: Clone,
+  {
+      self.map(|t| t.clone())
+  }
+```
+
+Here's an example from the Rust [docs](https://doc.rust-lang.org/std/result/enum.Result.html#method.cloned-1) that use `cloned`:
+
+```{.rust .scrollx}
+let mut val = 12;
+let x: Result<&mut i32, i32> = Ok(&mut val);
+assert_eq!(x, Ok(&mut 12));
+let cloned = x.cloned();
+assert_eq!(cloned, Ok(12));
+```
+
 
 ### iter
 
