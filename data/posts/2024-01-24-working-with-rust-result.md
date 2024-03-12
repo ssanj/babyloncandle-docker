@@ -779,7 +779,7 @@ We could use it like:
 let r1: Result<MyResult, MyError> = parse_my_result("123"); // Ok(N(123))
 let r2: Result<MyResult, MyError> = parse_my_result("true"); // Ok(B(true))
 let r3: Result<MyResult, MyError> = parse_my_result("something"); //Ok(S("something"))
-  let r4: Result<MyResult, MyError> = parse_my_result("HELLO"); //Err(MyError("We don't support screaming case: HELLO"))
+let r4: Result<MyResult, MyError> = parse_my_result("HELLO"); //Err(MyError("We don't support screaming case: HELLO"))
 ```
 
 How the `Err` type changed between `ParseIntError`, `ParseBoolError` to `MyError` can be a bit harder to see. Here's a more detailed example of the above:
@@ -840,10 +840,32 @@ Err(e:E) -> op(e)  -> Result<T, F> // `Err` type goes from `E` -> `F`
 Ok(t:T)  -> Ok(t)  -> Result<T, F> // `Ok` type is fixed: `T`
 ```
 
-This can be useful when you need access to the error to make a decision about the result to return.
+This can be useful when you need access to the error to make a decision about the result to return or when you need to log the error.
 
-// TODO: Add an example
+For example, if you want to log the error before returning a fallback:
 
+```
+fn parse_number_somehow(value: &str) -> Result<u32, MyError> {
+  parse_number(value)
+    .or_else(|e| {
+      eprintln!("Could not convert '{}' to a number: {}, defaulting to length", value, e);
+      parse_by_length(value)
+    })
+}
+
+fn parse_by_length(value: &str) -> Result<u32, MyError> {
+  let length = value.len();
+  if length <= u32::MAX as usize {
+    Ok(length as u32)
+  } else {
+    Err(MyError("Your string is too long for u32".to_owned()))
+  }
+}
+
+parse_number_somehow("number")
+//Could not convert 'number' to a number: invalid digit found in string, defaulting to length
+// Ok(6)
+```
 
 ## Working with errors
 
@@ -945,7 +967,24 @@ Ok(t:T) -> Some(t) // Option<T>
 Err(_)  -> None    // Option<T>
 ```
 
-TODO: Add a filter_map example
+For example, to only get a list of valid numbers we could use:
+
+```{.rust .scrollx}
+  let maybe_numbers =
+    vec![
+      "1",
+      "2",
+      "three",
+      "4"
+    ];
+
+    maybe_numbers
+      .iter()
+      .filter_map(|maybe_number| {
+          parse_number(maybe_number).ok()
+      })
+      .collect::<Vec<_>>(); // [1, 2, 4]
+```
 
 ### err
 
@@ -1037,7 +1076,7 @@ parse_bool("ten").is_ok();  // false
 parse_bool("true").is_ok(); // true
 ```
 
-we could use this function when testing for conditions:
+We could use this function when testing for conditions:
 
 ```{.rust .scrollx}
 if parse_bool(value).is_ok() {
@@ -1140,7 +1179,7 @@ In summary:
 // pseudocode
 // Given a Result<T, E>
 f: E     -> bool
-Ok(_)            -> false        // bool
+Ok(_)    -> false                // bool
 Err(e:E) -> f(e) -> true|false   // bool
 ```
 
