@@ -844,7 +844,7 @@ This can be useful when you need access to the error to make a decision about th
 
 For example, if you want to log the error before returning a fallback:
 
-```
+```{.rust .scrollx}
 fn parse_number_somehow(value: &str) -> Result<u32, MyError> {
   parse_number(value)
     .or_else(|e| {
