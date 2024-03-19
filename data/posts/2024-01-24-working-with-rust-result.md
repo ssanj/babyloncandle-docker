@@ -15,6 +15,7 @@ enum Result<T, E> {
 }
 ```
 
+
 The `Ok` constructor is used to represent success and the `Err` constructor is used to present an error.
 The first type variable `T` represents the success **value** while the second type `E` represents the error **value**:
 
@@ -27,12 +28,15 @@ enum Result<T, E> {
 }
 ```
 
+<img src="/images/2024-01-24-working-with-rust-result/rust-result-structure.png" width="600" />
+
 Many of the `std` functions return `Result`s if the action you're trying to perform can fail. Here's
-an example from the [Write](https://doc.rust-lang.org/std/io/trait.Write.html#method.write_all) trait in `std::io`:
+an example from the [Write](https://doc.rust-lang.org/std/io/trait.Write.html) trait in `std::io`:
 
 ```{.rust .scrollx}
 trait Write {
   fn write_all(&mut self, buf: &[u8]) -> Result<()>
+  ...
 }
 ```
 
@@ -40,7 +44,7 @@ Using the `write_all` method to write the contents of the supplied buffer (`buf`
 
 Now hold on, `Result` should have two type variables and the example above clearly only has one. What's going on?
 
-A frequent pattern used in Rust libraries is to create an alias for `Result` that wraps a particular error type. In the example above, `Result` is [aliased](https://doc.rust-lang.org/std/io/type.Result.html) as follows:
+A frequent pattern used in Rust libraries is to create a type alias for `Result` that wraps a particular error type. In the example above, `Result` is [aliased](https://doc.rust-lang.org/std/io/type.Result.html) as follows:
 
 ```{.rust .scrollx}
 pub type Result<T> = Result<T, Error>;
@@ -86,12 +90,12 @@ we know that a `u8` will be the success type (`T`) and a `String` will be the er
 `Note`: It's not recommended to use `String`s for error values because the compiler doesn't
 help you if you forget to handle a particular `String`. A better alternative is to use an `enum` of error values. We'll see an example of that later.
 
-If we wanted to print calls to the above function, we could do something like this:
+If we wanted to print the output of calls to the above function, we could do something like this:
 
 ```{.rust .scrollx}
-println!("{:?}", twenty_five(5));  //Err("5 is not 25!")
-println!("{:?}", twenty_five(25)); //Ok(25)
-println!("{:?}", twenty_five(35))  //Err("35 is not 25!")
+println!("{:?}", twenty_five(5));  // Err("5 is not 25!")
+println!("{:?}", twenty_five(25)); // Ok(25)
+println!("{:?}", twenty_five(35))  // Err("35 is not 25!")
 ```
 
 We have used the debug syntax (`{:?}`) to display the value of the `Result` in the above example. What if we want to actually get the success or error value "out" of a `Result` instead of just printing it?
@@ -106,12 +110,12 @@ Since `Rust` supports [pattern matching](https://doc.rust-lang.org/book/ch18-03-
 fn print_age(age_result: Result<u8, String>) {
   match age_result {
     Ok(age)    => println!("You are twenty five!"), // we could also do something with 'age' if we wanted.
-    Err(error)  => println!("Imposter! {}", error),
+    Err(error) => println!("Imposter! {}", error),
   }
 }
 
-print_age(twenty_five(20)); //Imposter! 20 is not 25!
-print_age(twenty_five(25)); //You are twenty five!
+print_age(twenty_five(20)); // Imposter! 20 is not 25!
+print_age(twenty_five(25)); // You are twenty five!
 ```
 
 ### map_or_else
@@ -180,7 +184,7 @@ where
     E: fmt::Debug,
 ```
 
-We can see that the above definition returns the success type `T` under all conditions. But how can it return a success value `T` if it's an `Err` instance with a value type `E`?
+We can see that the above definition returns the success type `T` under all conditions. But how can it return a success value `T` if it's an `Err` instance with a value of type `E`?
 
 Unwrap's implementation demonstrates how this is achieved:
 
@@ -361,7 +365,7 @@ This is also very similar to the `unwrap_or` where we supply a default value for
 ```{.rust .scrollx}
 // pseudocode
 Ok(t)   ->  t  -> T // Return value in Ok
-Err(e)         -> T // Return Default instance for T
+Err(_)         -> T // Return Default instance for T
 ```
 
 ## Transforming values within a Result
@@ -386,7 +390,10 @@ We can see from the above definition that, the supplied function `F` is only run
 ```{.rust .scrollx}
 // pseudocode
 // given a Result<T, E>
-F: T -> U // Convert success value to a U and return a Result<U, E>
+F: T -> U // Convert success value to a U
+
+Ok(t:T)   ->  F(t)  -> U // Return converted value in Ok, as a Result<U, E>
+Err(e:E)            -> E // Return existing error as Result<U, E>
 ```
 
 In either case the `Result`is converted from a `Result<T, E>` to a `Result<U, E>`. It's important to note that we stay within a `Result` after running the function `F`. Here's a simple example demonstrating this:
@@ -427,10 +434,12 @@ From the above definition, the function `F` is run on the success value within a
 // pseudocode
 // Given: Result<T, E>
 F: T -> Result<U, E> // Converts a success value into another Result
-E -> E // Returns the error if there is one, essentially short-circuiting the combination.
+
+Ok(t:T)   ->  F(t)  -> Ok(U)  // Return converted value in Ok, as a Result<U, E>
+Err(e:E)            -> Err(e) // Return existing error as Result<U, E>
 ```
 
-Given the following function that parses a string to a `u32` or a [ParseIntError](file:///Users/sanj/.rustup/toolchains/stable-aarch64-apple-darwin/share/doc/rust/html/std/num/struct.ParseIntError.html):
+Given the following function that parses a string to a `u32` or a [ParseIntError](https://doc.rust-lang.org/std/num/struct.ParseIntError.html):
 
 ```{.rust .scrollx}
 use std::num::ParseIntError;
@@ -452,7 +461,7 @@ parse_number("10")
     })
 ```
 
-Given that we know we have to use a function that also returns a `Result` from `and_then`:
+Given that we have to use a function that also returns a `Result` from `and_then`:
 
 ```{.rust .scrollx}
 parse_number("10")
@@ -574,7 +583,10 @@ in summary:
 ```{.rust .scrollx}
 // pseudocode
 // Given a Result<T, E>
-F: T -> U // Convert success value to a U and return a Result<U, E>
+F: T -> U // Convert success value to a U
+
+Ok(t:T)   ->  F(t)  -> U // Return converted value in Ok, as a Result<U, E>
+Err(e:E)            -> E // Return existing error as Result<U, E>
 ```
 
 We can see that after we apply the function `F`, we still return a `Result`. This is why we can use `map` within an `and_then` call.
@@ -609,14 +621,13 @@ fn add_numbers(one: &str, two: &str, three: &str) -> Result<u32, ParseIntError> 
 ```
 
 This is similar what we did with two numbers parsed from `Result`. But as we can see this is quickly becoming hard to reason about.
-Luckily Rust gives you a simpler way to do this.
+Luckily Rust gives us a simpler way to do this.
 
 
 ### The question mark operator
 
 Rust has the [question mark operator](https://doc.rust-lang.org/reference/expressions/operator-expr.html#the-question-mark-operator) (`?`) which allows you to simply
-return an error or extract a success value. You can think of it as an `unwrap` on `Ok` with an immediate return on `Err` instead of panic-ing. Here's the definition of
-`and_numbers_2` which uses the `?` operator:
+return an error or extract a success value. You can think of it as an `unwrap` on `Ok` with an immediate return on `Err` instead of panic-ing. Here's another the definition of `and_numbers` which uses the `?` operator:
 
 ```{.rust .scrollx}
 fn add_numbers_2(one: &str, two: &str, three: &str) -> Result<u32, ParseIntError> {
@@ -654,7 +665,7 @@ Ok(_) => res,
 
 This can be useful when you only want to know if something succeeded or failed instead of needing to work on its value.
 
-Take creating a directory and then creating a file in that directory only if the directory creation succeeded, as an example use case.
+Take creating a directory and then creating a file in that directory only if the directory creation succeeded.
 
 We can create a directory with the `create_dir` function from the `std::fs` module:
 
@@ -695,12 +706,12 @@ fn create_directory_and_file(dir_path: &Path, file_name: &str) -> io::Result<Fil
 If you wanted to try an alternative `Result` on `Err` and you didn't care about the error value, you could use `or`. `or` is defined as:
 
 ```{.rust .scrollx}
-  pub fn or<F>(self, res: Result<T, F>) -> Result<T, F> {
-      match self {
-          Ok(v) => Ok(v),
-          Err(_) => res,
-      }
-  }
+ pub fn or<F>(self, res: Result<T, F>) -> Result<T, F> {
+   match self {
+     Ok(v) => Ok(v),
+     Err(_) => res,
+   }
+ }
 ```
 
 From the above definition we can see that the value `res` is used only when there is an `Err` instance. If the `Result` is an `Ok` instance, its value
@@ -711,11 +722,12 @@ in summary:
 ```{.rust .scrollx}
 // pseudocode
 // Given a Result<T, E>
-Err(_) -> res:Result<T, F>  -> Result<T, F> // Notice that the `Err` type can change from `E` to `F`
-Ok(t)  -> Ok(t)             -> Result<T, F> // `Ok` type is fixed: `T`
+
+Err(_:E) -> res:Result<T, F>  -> Result<T, F> // Notice that the `Err` type can change from `E` to `F`
+Ok(t:T)  -> Ok(t)             -> Result<T, F> // `Ok` type is fixed: `T`
 ```
 
-It's important to note that `res` dictates the final `Err` type returned from `or` and that type inside the `Ok` constructor doesn't change. We'll see that come into play in the example below.
+It's important to note that `res` dictates the final `Err` type returned from `or` and that the type inside the `Ok` constructor doesn't change. We'll see that come into play in the example below.
 
 Here's an example of where we can try one of several parse functions until we find one that succeeds.
 
@@ -746,7 +758,7 @@ fn parse_bool(value: &str) -> Result<bool, ParseBoolError> {
 }
 ```
 
-One thing to note is that both functions return different error types in `Err`: `ParseIntError` and [ParseBoolError](file:///Users/sanj/.rustup/toolchains/stable-aarch64-apple-darwin/share/doc/rust/html/std/str/struct.ParseBoolError.html) respectively.
+One thing to note is that both functions return different error types in `Err`: `ParseIntError` and [ParseBoolError](https://doc.rust-lang.org/std/str/struct.ParseBoolError.html) respectively.
 
 How would we combine these functions into parsing a string slice into a type of `MyResult`? Oh, and we also don't support converting a string that is all caps into `MyResult`. That would be an error.
 
@@ -761,7 +773,7 @@ fn parse_my_result(value: &str) -> Result<MyResult, MyError> {
     .or(
       parse_bool(value) // Result<u32, ParseBoolError>
         .map(|b| MyResult::B(b))
-    ) // Result<u32, ParseBoolError>
+    ) // Result<MyResult, ParseBoolError>
     .or(
       if value.to_uppercase() == value {
           // We don't support full caps
@@ -1221,203 +1233,4 @@ A simple example to testing whether a number is an invalid digit:
   parse_number("blah")
     .map_err(|e| MyError(e.to_string()))
     .is_err_and(|MyError(error)| error.contains("invalid digit")); // true
-```
-
-### References
-
-The following methods work on references to the type `T` within `Result<T, E>`.
-
-### copied
-
-`copied` converts a `Result<&T, E>` with a borrow of `T` into to a `Result<T, E>`. `copied` is implemented as:
-
-
-```{.rust .scrollx}
-impl<T, E> Result<&T, E> {
-
-  pub fn copied(self) -> Result<T, E>
-  where
-      T: Copy,
-  {
-      self.map(|&t| t)
-  }
-}
-```
-
-From the above definition, for this method to work, `T` needs to have an implementation of the `Copy` trait.
-
-Here's an example from the Rust [docs](https://doc.rust-lang.org/std/result/enum.Result.html#method.copied) that use `copied`:
-
-```{.rust .scrollx}
-let val = 12;
-let x: Result<&i32, i32> = Ok(&val);
-assert_eq!(x, Ok(&12));
-let copied = x.copied();
-assert_eq!(copied, Ok(12));
-```
-
-### cloned
-
-`cloned` converts a `Result<&T, E>` with a clone of `T` into to a `Result<T, E>`. `clone` is implemented as:
-
-```{.rust .scrollx}
-impl<T, E> Result<&T, E> {
-
-  pub fn cloned(self) -> Result<T, E>
-  where
-      T: Clone,
-  {
-      self.map(|t| t.clone())
-  }
-}
-```
-
-Here's an example from the Rust [docs](https://doc.rust-lang.org/std/result/enum.Result.html#method.cloned) that use `cloned`:
-
-```{.rust .scrollx}
-let val = 12;
-let x: Result<&i32, i32> = Ok(&val);
-assert_eq!(x, Ok(&12));
-let cloned = x.cloned();
-assert_eq!(cloned, Ok(12));
-```
-
-### as_ref
-
-`as_ref` converts a `Result<T, E>` into a `Result<&T, &E>`, returning references to both `T` and `E`. `as_ref` is implemented as:
-
-```{.rust .scrollx}
-impl<T, E> Result<T, E> {
-  pub const fn as_ref(&self) -> Result<&T, &E> {
-      match *self {
-          Ok(ref x) => Ok(x),
-          Err(ref x) => Err(x),
-      }
-  }
-}
-```
-
-For example:
-
-```{.rust .scrollx}
-let n20: Result<u32, ParseIntError> = parse_number("20");
-let n20_refs: Result<&u32, &ParseIntError> = n20.as_ref();
-```
-
-### as_mut
-
-`as_ref` converts a `Result<T, E>` into a `Result<&mut T, &mut E>`, returning mutable references to both `T` and `E`. `as_mut` is implemented as:
-
-```{.rust .scrollx}
-impl<T, E> Result<T, E> {
-  pub const fn as_mut(&mut self) -> Result<&mut T, &mut E> {
-      match *self {
-          Ok(ref mut x) => Ok(x),
-          Err(ref mut x) => Err(x),
-      }
-  }
-}
-```
-
-Here's an example from the Rust [docs](https://doc.rust-lang.org/std/result/enum.Result.html#method.as_mut) that use `as_mut`:
-
-TODO: Write an example
-
-```{.rust .scrollx}
-fn mutate(r: &mut Result<i32, i32>) {
-    match r.as_mut() {
-        Ok(v) => *v = 42,
-        Err(e) => *e = 0,
-    }
-}
-
-let mut x: Result<i32, i32> = Ok(2);
-mutate(&mut x);
-assert_eq!(x.unwrap(), 42);
-
-let mut x: Result<i32, i32> = Err(13);
-mutate(&mut x);
-assert_eq!(x.unwrap_err(), 0);
-```
-
-### as_deref
-
-for `impl<T, E> Result<T, E>`
-
-```{.rust .scrollx}
-  pub fn as_deref(&self) -> Result<&T::Target, &E>
-  where
-      T: Deref,
-  {
-      self.as_ref().map(|t| t.deref())
-  }
-```
-
-### Mutable references
-
-The following methods work on references to the type `&mut T` within `Result<T, E>`.
-
-### copied
-
-`copied` converts a `Result<&mut T, E>` with a mutable borrow of `T` into to a `Result<T, E>`. `copied` is implemented as:
-
-```{.rust .scrollx}
-impl<T, E> Result<&mut T, E> {
-  pub fn copied(self) -> Result<T, E>
-  where
-      T: Copy,
-  {
-      self.map(|&mut t| t)
-  }
-}
-```
-
-Here's an example from the Rust [docs](https://doc.rust-lang.org/std/result/enum.Result.html#method.copied-1) that use `copied`:
-
-```{.rust .scrollx}
-let mut val = 12;
-let x: Result<&mut i32, i32> = Ok(&mut val);
-assert_eq!(x, Ok(&mut 12));
-let copied = x.copied();
-assert_eq!(copied, Ok(12));
-```
-
-### cloned
-
-`cloned` converts a `Result<&mut T, E>` with a mutable borrow of `T` into to a `Result<T, E>`. `clone` is implemented as:
-
-```{.rust .scrollx}
-  pub fn cloned(self) -> Result<T, E>
-  where
-      T: Clone,
-  {
-      self.map(|t| t.clone())
-  }
-```
-
-Here's an example from the Rust [docs](https://doc.rust-lang.org/std/result/enum.Result.html#method.cloned-1) that use `cloned`:
-
-```{.rust .scrollx}
-let mut val = 12;
-let x: Result<&mut i32, i32> = Ok(&mut val);
-assert_eq!(x, Ok(&mut 12));
-let cloned = x.cloned();
-assert_eq!(cloned, Ok(12));
-```
-
-
-### iter
-
-```{.rust .scrollx}
-  pub fn iter(&self) -> Iter<'_, T> {
-      Iter { inner: self.as_ref().ok() }
-  }
-```
-
-### iter_mut
-
-```{.rust .scrollx}
-  pub fn iter_mut(&mut self) -> IterMut<'_, T> {
-      IterMut { inner: self.as_mut().ok() }
-  }
 ```
