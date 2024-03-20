@@ -520,9 +520,29 @@ which points to the real cause:
 
 What this means is that when you are chaining `Result`s through `and_then` functions, all the `Err` types need to be the same. We can change the `Ok` type as
 much as we want but we have to `align` the errors. This is just something to keep in mind when using `Result`. If you have functions that return `Result`s with different
-`Err` types, you can create a common error type and convert each error into that type using something like `map_err`, which we will cover later.
+`Err` types, you can create a common error type and convert each error into that type using something like [map_err](#map_err), which we will cover later.
 
-// TODO: Add an example
+
+For completeness, here's how you align your error types with `map_error`:
+
+```{.rust .scrollx}
+parse_number("10")
+  .map_err(|e| MyError(e.to_string())) // Result<u32, MyError>
+  .and_then(|one| {
+    // We have successfully parsed "10" into 10.
+    parse_number("20")
+      .map_err(|e| MyError(e.to_string())) // Result<u32, MyError>
+      .and_then(|two| {
+          // We have successfully parsed "20" into 20.
+          // but we don't like even numbers...
+          if two % 2 == 0 {
+              Err(MyError("I don't add even numbers".to_owned())) // Result<u32, MyError>
+          } else {
+              Ok(one + two)
+          }
+      })
+})
+```
 
 What if we want to parse two numbers and add them together?
 
@@ -900,6 +920,7 @@ In summary:
 ```{.rust .scrollx}
 // pseudocode
 // Given a Result<T, E>
+
 Err(e:E) -> op(e)  -> F  -> Result<T, F>  // `Err` type goes from `E` -> `F` and is wrapped in an `Err`
 Ok(t:T)  -> Ok(t)        -> Result<T, F> // `Ok` type is fixed: `T`
 ```
@@ -938,20 +959,21 @@ In summary:
 ```{.rust .scrollx}
 // pseudocode
 // Given a Result<T, E>
-Err(e:E) -> E  // Returns the error in an Err
-Ok(_)  -> panic // Panics on any Ok value
+
+Err(e:E) -> E     // Returns the error in an Err
+Ok(_)    -> panic // Panics on any Ok value
 ```
 
 For example, if we try to unwrap a success value:
 
 ```{.rust .scrollx}
-parse_bool("true").unwrap_err() //panics - called `Result::unwrap_err()` on an `Ok` value: true
+parse_bool("true").unwrap_err() // panics - called `Result::unwrap_err()` on an `Ok` value: true
 ```
 
 when used on an error:
 
 ```{.rust .scrollx}
-parse_bool("ten").unwrap_err() //ParseBoolError
+parse_bool("ten").unwrap_err() // ParseBoolError
 ```
 
 ## Conversions to Option
@@ -975,11 +997,12 @@ In summary:
 ```{.rust .scrollx}
 // pseudocode
 // Given a Result<T, E>
+
 Ok(t:T) -> Some(t) // Option<T>
 Err(_)  -> None    // Option<T>
 ```
 
-For example, to only get a list of valid numbers we could use:
+For example, to only get a list of valid numbers from a list of valid and invalid numbers, we could use:
 
 ```{.rust .scrollx}
   let maybe_numbers =
@@ -1000,7 +1023,7 @@ For example, to only get a list of valid numbers we could use:
 
 ### err
 
-This is the opposite of `ok` where we reverse the mappings, going from an `Ok` instance to `None` and `Err` instance to
+This is the opposite of `ok` where we reverse the mappings, going from an `Ok` instance to `None` and an `Err` instance to
 `Some`:
 
 ```{.rust .scrollx}
@@ -1017,8 +1040,22 @@ In summary:
 ```{.rust .scrollx}
 // pseudocode
 // Given a Result<T, E>
+
 Err(e:E) -> Some(e) // Option<E>
 Ok(_)    -> None    // Option<E>
+```
+For example, if we only wanted invalid numbers from our list of possible numbers, we could use:
+
+```{.rust .scrollx}
+let only_errors =
+  maybe_numbers
+    .iter()
+    .filter_map(|maybe_number| {
+        parse_number(maybe_number)
+          .err()
+          .map(|e| (maybe_number, e)) // Return a pair of the "number" and the error
+    })
+    .collect::<Vec<_>>(); // [("three", ParseIntError { kind: InvalidDigit })]
 ```
 
 ### transpose
@@ -1044,6 +1081,7 @@ In summary:
 ```{.rust .scrollx}
 // pseudocode
 // Given a Result<Option<T>, E>
+
 Ok(Some(t:T))  -> Some(Ok(t))    // Option<Result<T, E>>
 Ok(None)       -> None           // Option<Result<T, E>>
 Err(e:E)       -> Some(Err(e))   // Option<Result<T, E>>
@@ -1056,33 +1094,31 @@ This can be useful when you have a one or more `Result<Option<T>, E>` and want t
 valid `Some` instances. For example, to retrieve only even numbers or any parse errors we could use:
 
 ```{.rust .scrollx}
-  let maybe_numbers_2 =
-    vec![
-      "1",
-      "2",
-      "three",
-      "4",
-      "5",
-      "6",
-      "se7en",
-    ];
+let maybe_numbers_2 =
+  vec![
+    "1",
+    "2",
+    "three",
+    "4",
+    "5",
+    "6",
+    "se7en",
+  ];
 
-    maybe_numbers_2
-      .iter()
-      .filter_map(|maybe_number| {
-          parse_number(maybe_number)
-            .map(|n| {
-              if n % 2 == 0 {
-                Some(n)
-              } else {
-                None
-              }
-            })
-            .transpose()
-      })
-      .collect::<Vec<_>>()
-
-    // [Ok(2), Err(ParseIntError { kind: InvalidDigit }), Ok(4), Ok(6), Err(ParseIntError { kind: InvalidDigit })]
+maybe_numbers_2
+  .iter()
+  .filter_map(|maybe_number| {
+      parse_number(maybe_number)
+        .map(|n| {
+          if n % 2 == 0 {
+            Some(n) // We only want even numbers
+          } else {
+            None // We want odd numbers filtered out
+          }
+        })
+        .transpose()
+  })
+  .collect::<Vec<_>>() // [Ok(2), Err(ParseIntError { kind: InvalidDigit }), Ok(4), Ok(6), Err(ParseIntError { kind: InvalidDigit })]
 ```
 
 
@@ -1098,13 +1134,14 @@ pub const fn is_ok(&self) -> bool {
 }
 ```
 
-[matches!](file:///Users/sanj/.rustup/toolchains/stable-aarch64-apple-darwin/share/doc/rust/html/std/macro.matches.html) is a macro that tests if a value matches a given pattern, returning a bool value to indicate success and failure.
+[matches!](https://doc.rust-lang.org/std/macro.matches.html) is a macro that tests if a value matches a given pattern, returning a bool value to indicate success or failure.
 
 In summary:
 
 ```{.rust .scrollx}
 // pseudocode
 // Given a Result<T, E>
+
 Ok(_)  -> true  // bool
 Err(_) -> false // bool
 ```
@@ -1120,9 +1157,9 @@ We could use this function when testing for conditions:
 
 ```{.rust .scrollx}
 if parse_bool(value).is_ok() {
-  //do something when we have booleans
+  // Do something when we have booleans
 } else {
-  //do something when we don't have booleans
+  // Do something when we don't have booleans
 }
 ```
 
@@ -1141,6 +1178,7 @@ In summary:
 ```{.rust .scrollx}
 // pseudocode
 // Given a Result<T, E>
+
 Ok(_)  -> false  // bool
 Err(_) -> true   // bool
 ```
@@ -1156,9 +1194,9 @@ In a conditional as before:
 
 ```{.rust .scrollx}
 if parse_bool(value).is_err() {
-  //do something when we don't have booleans
+  // Do something when we don't have booleans
 } else {
-  //do something when we have booleans
+  // Do something when we have booleans
 }
 ```
 
@@ -1183,6 +1221,7 @@ In summary:
 ```{.rust .scrollx}
 // pseudocode
 // Given a Result<T, E>
+
 f: T    -> bool
 Ok(t:T) -> f(t)   -> true|false  // bool
 Err(_)  -> false                 // bool
@@ -1218,12 +1257,13 @@ In summary:
 ```{.rust .scrollx}
 // pseudocode
 // Given a Result<T, E>
+
 f: E     -> bool
 Ok(_)    -> false                // bool
 Err(e:E) -> f(e) -> true|false   // bool
 ```
 
-A simple example to testing whether a number is an invalid digit:
+A simple example is to testing whether a number is an invalid digit:
 
 ```{.rust .scrollx}
   parse_number("2")
