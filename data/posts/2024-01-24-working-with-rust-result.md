@@ -939,7 +939,7 @@ when using functions like `and_then`.
 
 ### unwrap_err
 
-`unwrap_err` gives you access to the error inside an `Err` instance and panics on an `Ok` instance. This is an unsafe function
+`unwrap_err` gives you access to the error inside an `Err` instance and <u>panic</u>s on an `Ok` instance. This is an unsafe function
 and should be used only when you know for certain that you have an `Err` or don't care (like maybe in a test function, where you want the test to fail).
 
 ```{.rust .scrollx}
@@ -960,7 +960,7 @@ In summary:
 // pseudocode
 // Given a Result<T, E>
 
-Err(e:E) -> E     // Returns the error in an Err
+Err(e:E) -> E     // Returns the error in the Err
 Ok(_)    -> panic // Panics on any Ok value
 ```
 
@@ -974,6 +974,46 @@ when used on an error:
 
 ```{.rust .scrollx}
 parse_bool("ten").unwrap_err() // ParseBoolError
+```
+
+### expect_err
+
+`expect_err` is similar to `unwrap_err` where you get the value inside the `Err` instance or <u>panic</u>, but where you get to provide a custom error message.
+
+`expect_err` is defined as:
+
+```{.rust .scrollx}
+pub fn expect_err(self, msg: &str) -> E
+    where
+        T: fmt::Debug,
+    {
+        match self {
+            Ok(t) => unwrap_failed(msg, &t),
+            Err(e) => e,
+        }
+    }
+```
+
+In summary:
+
+```{.rust .scrollx}
+// pseudocode
+// Given a Result<T, E>
+
+Err(e:E) -> E     // Returns the error in the Err
+Ok(_)    -> panic // Panics on any Ok value with the supplied message
+```
+
+For example, if we try to unwrap a success value:
+
+```{.rust .scrollx}
+parse_bool("true").expect_err("This should not be bool") // panics - This should not be bool: true
+```
+
+when used on an error:
+
+```{.rust .scrollx}
+parse_bool("ten").expect_err("This should not be bool") // ParseBoolError
 ```
 
 ## Conversions to Option
@@ -1274,3 +1314,177 @@ A simple example is to testing whether a number is an invalid digit:
     .map_err(|e| MyError(e.to_string()))
     .is_err_and(|MyError(error)| error.contains("invalid digit")); // true
 ```
+
+## Summary
+
+If you've made it this far, you're probably overwhelmed by all the different methods and their uses.
+It helps to try and learn and use them one at a time as and when needed. The following table summarises which method you would use under different circumstances.
+
+<table>
+  <tbody>
+    <tr>
+      <th>What do you want to do?</th>
+      <th align="right">Method to use</th>
+    </tr>
+    <tr>
+      <td align="center">Create a `Result`</td>
+      <td align="left">
+        <ul>
+          <li>Constructor: `Ok(value)`</li>
+          <li>Constructor: `Err(value)`</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td align="center">Get the value out of a `Result`</td>
+      <td align="left">
+        <ul>
+          <li>`Patten matching`</li>
+          <li>`map_or_else`</li>
+          <li>`map_or`</li>
+          <li>`unwrap` unsafe</li>
+          <li>`unwrap_or`</li>
+          <li>`unwrap_or_else`</li>
+          <li>`unwrap_or_default`</li>
+          <li>`expect` unsafe</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td align="center">Run a function on the value inside `Ok`</td>
+      <td align="left">
+        <ul>
+          <li>`map`</li>
+          <li>`and_then`</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td align="center">Run a function on the value inside `Err`</td>
+      <td align="left">
+        <ul>
+          <li>`or_else`</li>
+          <li>`map_err`</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td align="center">Get the value inside `Ok`</td>
+      <td align="left">
+        <ul>
+          <li>`unwrap` unsafe</li>
+          <li>`expect` unsafe</li>
+          <li>`? operator`</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td align="center">Get the value inside `Ok` with fallback</td>
+      <td align="left">
+        <ul>
+          <li>`Patten matching`</li>
+          <li>`map_or`</li>
+          <li>`unwrap_or`</li>
+          <li>`unwrap_or_else`</li>
+          <li>`unwrap_or_default`</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td align="center">Get the value inside `Err`</td>
+      <td align="left">
+        <ul>
+          <li>`unwrap_err` unsafe</li>
+          <li>`expect_err` unsafe</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td align="center">Get the value inside `Err` with fallback</td>
+      <td align="left">
+        <ul>
+          <li>`Patten matching`</li>
+          <li>`map_or`</li>
+          <li>`unwrap_or`</li>
+          <li>`unwrap_or_else`</li>
+          <li>`unwrap_or_default`</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td align="center">Combine two `Result`s that are `Ok`</td>
+      <td align="left">
+        <ul>
+          <li>`and_then`</li>
+          <li>`and`</li>
+          <li>`? operator`</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td align="center">Combine two `Result`s that are `Err`</td>
+      <td align="left">
+        <ul>
+          <li>`or`</li>
+          <li>`or_else`</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td align="center">Convert `Ok` to `Option` as `Some`</td>
+      <td align="left">
+        <ul>
+          <li>`ok`</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td align="center">Convert `Err` to `Option` as `Some`</td>
+      <td align="left">
+        <ul>
+          <li>`err`</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td align="center">Convert `Result<Option>` to `Option<Result>`</td>
+      <td align="left">
+        <ul>
+          <li>`transpose`</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td align="center">Test for `Ok`</td>
+      <td align="left">
+        <ul>
+          <li>`is_ok`</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td align="center">Test for `Err`</td>
+      <td align="left">
+        <ul>
+          <li>`is_err`</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td align="center">Test for `Ok` and run a predicate</td>
+      <td align="left">
+        <ul>
+          <li>`is_ok_and`</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td align="center">Test for `Err` and run a predicate</td>
+      <td align="left">
+        <ul>
+          <li>`is_err_and`</li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
