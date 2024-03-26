@@ -6,7 +6,7 @@ tags: Rust
 comments: true
 ---
 
-Languages like [Haskell](https://www.haskell.org/) and [Scala](https://www.scala-lang.org/) have a type called [Either](https://hackage.haskell.org/package/base-4.19.0.0/docs/Data-Either.html) to represent a value that maybe successful or in error. In Rust this type is called a [Result](https://doc.rust-lang.org/std/result/index.html) and is defined as:
+In Rust there is a type to to represent a value that maybe successful or in error. In Rust this type is called a [Result](https://doc.rust-lang.org/std/result/index.html) and is defined as:
 
 ```{.rust .scrollx}
 enum Result<T, E> {
@@ -23,12 +23,14 @@ The first type variable `T` represents the success **value** while the second ty
 /// T -> Success type
 /// E -> Error type
 enum Result<T, E> {
-   Ok(T), // All good
+   Ok(T),  // All good
    Err(E), // Oh noes
 }
 ```
 
 <img src="/images/2024-01-24-working-with-rust-result/rust-result-structure.png" width="600" />
+
+> Note: The code examples from the Rust std are from version `1.77.0`.
 
 Many of the `std` functions return `Result`s if the action you're trying to perform can fail. Here's
 an example from the [Write](https://doc.rust-lang.org/std/io/trait.Write.html) trait in `std::io`:
@@ -139,7 +141,7 @@ F: T -> U // Convert success value to a U
 D: E -> U // Convert error value to a U
 ```
 
- `D` is used on the error value inside an `Err` instance and `F` is used on the success value inside an `Ok` instance. `map_or_else` has simply run a function on each data constructor (`Ok` and `Err`) to produce a result of the same type in all cases. This type of construct is also called a `fold` in some languages.
+ `D` is used on the error value inside an `Err` instance and `F` is used on the success value inside an `Ok` instance. `map_or_else` has simply run a function on each data constructor (`Ok` and `Err`) to produce a result of the same type in all cases.
 
 ### map_or
 
@@ -1127,8 +1129,9 @@ Ok(None)       -> None           // Option<Result<T, E>>
 Err(e:E)       -> Some(Err(e))   // Option<Result<T, E>>
 ```
 
-We are basically flipping the containers; going from `Result<Option<T>, E>` to a `Option<Result<T, E>>`. In some FP languages,
-this is referred to as [sequence](https://hackage.haskell.org/package/base-4.19.1.0/docs/Data-Traversable.html#v:sequence). But why is this useful?
+We are basically flipping the containers; going from `Result<Option<T>, E>` to a `Option<Result<T, E>>`.
+
+But why is this useful?
 
 This can be useful when you have a one or more `Result<Option<T>, E>` and want to know if all the inner `Option` types are
 valid `Some` instances. For example, to retrieve only even numbers or any parse errors we could use:
