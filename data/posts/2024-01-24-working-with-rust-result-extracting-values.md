@@ -1,5 +1,5 @@
 ---
-title: Working With Rust Result - Extracting Values from a Result
+title: Working With Rust Result - Extracting Values
 author: sanjiv sahayam
 description: working with rust result
 tags: Rust
@@ -9,12 +9,12 @@ comments: true
 
 ## Pattern Matching
 
-Since `Rust` supports [pattern matching](https://doc.rust-lang.org/book/ch18-03-pattern-syntax.html), a simple way to extract a value from a `Result` is to pattern match:
+Since `Rust` supports [pattern matching](https://doc.rust-lang.org/book/ch18-03-pattern-syntax.html), a simple way to extract a value from a `Result` is to pattern match on its constructors:
 
 ```{.rust .scrollx}
 fn print_age(age_result: Result<u8, String>) {
   match age_result {
-    Ok(age)    => println!("You are twenty five!"), // We could also do something with 'age' if we wanted.
+    Ok(age)    => println!("You are twenty five!"), // We could also do something with 'age' if we wanted to.
     Err(error) => println!("Imposter! {}", error),
   }
 }
@@ -45,7 +45,29 @@ F: T -> U // Convert success value to a U
 D: E -> U // Convert error value to a U
 ```
 
- `D` is used on the error value inside an `Err` instance and `F` is used on the success value inside an `Ok` instance. `map_or_else` has simply run a function on each data constructor (`Ok` and `Err`) to produce a result of the same type in all cases: `U`.
+ `D` is used on the error value inside an `Err` instance and `F` is used on the success value inside an `Ok` instance. `map_or_else` has simply extracted the "wrapped" value in each constructor and run a function on each of those values to produce a result of the same type in all cases: `U`.
+
+ It's important to note that the return type of this function is: `U` and not a `Result`. We have left the confines of our `Result` wrappers.
+
+ > Technically `U` could represent any type, even a `Result`, but we'll ignore that for now.
+
+For example to get a pass or failing grade:
+
+```{.rust .scrollx}
+fn pass_or_fail(grade: u8) -> Result<String, String> {
+  if grade < 50 {
+    Err(format!("You have failed miserably with a grade of: {grade}"))
+  } else {
+    Ok(format!("Here's your certificate, for a magnificent grade of: {grade}"))
+  }
+}
+
+let result1 = pass_or_fail(45).map_or_else(|e| e.to_string(), |t| t);
+let result2 = pass_or_fail(75).map_or_else(|e| e.to_string(), |t| t);
+
+println!("{result1}"); // You have failed miserably with a grade of: 45
+println!("{result2}"); // Here's your certificate, for a magnificent grade of: 75
+```
 
 ## map_or
 
@@ -60,6 +82,8 @@ pub fn map_or<U, F: FnOnce(T) -> U>(self, default: U, f: F) -> U {
 }
 ```
 
+> Note how we ignore the value inside of `Err` with `Err(_)`.
+
 In the above definition, a function `F` runs on the value inside the `Ok` instance and a default value is returned if it's an `Err` instance:
 
 ```{.rust .scrollx}
@@ -73,5 +97,12 @@ Notice that we completely ignore the value inside of the `Err` instance.
 
 `map_or` differs from `map_or_else`, in that it only takes a single function `F` and a default value to return in the `Err` case. This can be useful if you don't care about what the error case was and simple want to return some default value.
 
+```{.rust .scrollx}
+let result1 = pass_or_fail(45).map_or("You failed :(".to_owned(), |t| t);
+let result2 = pass_or_fail(75).map_or("You failed :(".to_owned(), |t| t);
+
+println!("{result1}"); // You have failed :(
+println!("{result2}"); // Here's your certificate, for a magnificent grade of: 75
+```
 
 Continue on to [Being Unsafe](2024-01-24-working-with-rust-result-extracting-values-unsafe.html)

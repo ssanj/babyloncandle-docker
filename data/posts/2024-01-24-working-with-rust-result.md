@@ -6,7 +6,7 @@ tags: Rust
 comments: true
 ---
 
-In Rust there is a type to to represent a value that maybe successful or in error. In Rust this type is called a [Result](https://doc.rust-lang.org/std/result/index.html) and is defined as:
+In Rust there is a type to represent a value that maybe successful or in error. That type is called a [Result](https://doc.rust-lang.org/std/result/index.html) and is defined as:
 
 ```{.rust .scrollx}
 enum Result<T, E> {
@@ -17,8 +17,9 @@ enum Result<T, E> {
 
 <img src="/images/2024-01-24-working-with-rust-result/rust-result-structure.png" width="600" />
 
-The `Ok` constructor is used to represent success and the `Err` constructor is used to present an error.
-The first type variable `T` represents the success **value** while the second type `E` represents the error **value**:
+You can think of `Ok` and `Err` as just wrappers around the actual values. That way if you see an `Ok` instance you know it has a success value wrapped "inside" it. Similarly when you get an `Err` instance, you know that it has an error value wrapped "inside" it. If you find this confusing, you can think of the `Ok` and `Err` constructors as "markers" indicating what the value they have is: either a success or error, respectively.
+
+The first type variable `T`, represents the success **value** while, the second type `E`, represents the error **value**:
 
 ```{.rust .scrollx}
 /// T -> Success type
@@ -29,7 +30,7 @@ enum Result<T, E> {
 }
 ```
 
-> Note: The code examples from the Rust std are from version `1.77.0`.
+> Note: The code examples from Rust std are from version `1.77.0`.
 
 ## Construction
 
@@ -49,7 +50,13 @@ fn twenty_five(age: u8) -> Result<u8, String> {
 From the above `Result` type:
 
 ```{.rust .scrollx}
- Result<u8, String>
+ // Given:       Result<T , E>
+ //                     |   |
+ //                     v   v
+ // Return type: Result<u8, String>
+
+ // T = u8
+ // E = String
 ```
 
 we know that a `u8` will be the success type (`T`) and a `String` will be the error type (`E`).
@@ -65,6 +72,8 @@ println!("{:?}", twenty_five(25)); // Ok(25)
 println!("{:?}", twenty_five(35))  // Err("35 is not 25!")
 ```
 
-We have used the debug syntax (`{:?}`) to display the value of the `Result` in the above example. What if we want to actually get the success or error value "out" of a `Result` instead of just printing it?
+We have used the debug syntax (`{:?}`) to display the value of the `Result` in the above example.
+
+What if we want to actually get the success or error value "out" of a `Result` instead of just printing it?
 
 Continue to [Extracting Values](2024-01-24-working-with-rust-result-extracting-values.html)
