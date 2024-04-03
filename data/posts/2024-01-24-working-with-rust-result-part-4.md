@@ -1,5 +1,5 @@
 ---
-title: Working With Rust Result - Extracting Values from a Result Safely
+title: Working With Rust Result - Extracting Values from a Result Safely - Part 4
 author: sanjiv sahayam
 description: working with rust result
 tags: Rust
@@ -7,10 +7,19 @@ comments: true
 ---
 
 
-One way we can `unwrap` a `Result` safely, is to provide a default value or function, that returns a value of type `T` (The `Ok` type) when there is an `Err`.
+We can `unwrap` a `Result` safely, if we provide a default value of type `T` or call a function that returns a value of type `T` when given a type `E`:
+
+```{.rust .scrollx}
+// pseudocode
+// Given: Result<T, E>
+
+Ok(T)  -> T
+Err(E) -> T // return value of `T` or a use a function of type `E` -> `T`
+```
 
 ### unwrap_or
 
+`unwrap_or` is defined as:
 `unwrap_or` is defined as:
 
 ```{.rust .scrollx}
@@ -22,7 +31,7 @@ pub fn unwrap_or(self, default: T) -> T {
 }
 ```
 
-We can see from the above definition that, we supply a default value of `T`. This default value will be used when there is an `Err`, the `Ok` value will be returned otherwise. This is very similar to `map_or` but where we don't run a function on the success value:
+In the above definition we supply a default value of type `T`. This default value will be used when there is an `Err`, the `Ok` value will be returned otherwise. This is very similar to `map_or` but where we don't run a function on the success value:
 
 ```{.rust .scrollx}
 // pseudocode
@@ -86,7 +95,7 @@ In the above definition, if a `Result` is an `Err` then the default instance of 
   result_err.unwrap_or_default(); // 0
 ```
 
-This is also very similar to the `unwrap_or` where we supply a default value for the error case. In `unwrap_or_default` the default value is derived from the `Default` instance for type `T`:
+This is also very similar to `unwrap_or` where, we supply a default value for the error case. In `unwrap_or_default` the default value is derived from the `Default` instance for type `T`:
 
 ```{.rust .scrollx}
 // pseudocode
@@ -95,4 +104,4 @@ Ok(t)   ->  t  -> T // Return value in Ok
 Err(_)         -> T // Return Default instance for T
 ```
 
-Continue on to [Transforming Values](2024-01-24-working-with-rust-result-transforming-values.html)
+Continue on to [Transforming Values](2024-01-24-working-with-rust-result-part-5.html)

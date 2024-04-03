@@ -1,5 +1,5 @@
 ---
-title: Working With Rust Result - Combining Results
+title: Working With Rust Result - Combining Results - Part 6
 author: sanjiv sahayam
 description: working with rust result
 tags: Rust
@@ -23,6 +23,8 @@ pub fn and_then<U, F: FnOnce(T) -> Result<U, E>>(self, op: F) -> Result<U, E> {
 ```
 
 From the above definition, the function `F` is run on the success value within an `Ok` instance. This is very similar to `map`. The main difference is that the function `F` returns another `Result` instead of another type.
+
+> Unlike `map` there is no wrapping of the result in an `Ok` constructor as `F` already returns a `Result`.
 
 ```{.rust .scrollx}
 // pseudocode
@@ -56,7 +58,7 @@ parse_number("10")
     })
 ```
 
-Given that we have to use a function that also returns a `Result` from `and_then`:
+Given that we have to use a function that also returns a `Result` from `and_then` we can wrap `new_result` in the `Ok` constructor:
 
 ```{.rust .scrollx}
 parse_number("10")
@@ -139,6 +141,6 @@ parse_number("10")
 })
 ```
 
-Continue on to [Combining with Map](2024-01-24-working-with-rust-result-combining-results-with-map.html)
+Continue on to [Combining with Map](2024-01-24-working-with-rust-result-part-7.html)
 
 

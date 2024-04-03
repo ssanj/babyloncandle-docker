@@ -1,12 +1,12 @@
 ---
-title: Working With Rust Result - Tranforming Values
+title: Working With Rust Result - Tranforming Values - Part 5
 author: sanjiv sahayam
 description: working with rust result
 tags: Rust
 comments: true
 ---
 
-When using functions like `map_or_else`, we extracted the success and error values out of a `Result`, thereby losing our `Result` "container". What if you could run a function on the value within a `Result` and stay within the `Result` "container"? Then you wouldn't have to do all this pesky unwrapping until when you actually needed the value.
+When using functions like `map_or_else`, we extracted the success and error values out of a `Result`, thereby losing our `Result` "container". What if you could run a function on the value within a `Result` and stay within the `Result` "container"? Then you wouldn't have to do all this pesky unwrapping until you needed the value.
 
 ### map
 
@@ -21,7 +21,9 @@ pub fn map<U, F: FnOnce(T) -> U>(self, op: F) -> Result<U, E> {
 }
 ```
 
-We can see from the above definition that, the supplied function `F` is only run on the `Ok` instance and the `Err` instance is left untouched.
+In the above definition, the supplied function `F` is only run on the value within the `Ok` instance and the error value within the `Err` instance is left untouched.
+
+> After function `F` is used, the result is rewrapped in an `Ok` constructor. In the `Err` case we also rewrap the error again. This might seem pointless, but this has to be done because the result type is changing from a `Result<T, E>` to a `Result<U, E>` and the `Err(e)` in the pattern match is of type `Result<T, E>`. By creating a new `Err` instance we convert the error to type `Result<U, E>`.
 
 ```{.rust .scrollx}
 // pseudocode
@@ -48,4 +50,4 @@ In either case the `Result`is converted from a `Result<T, E>` to a `Result<U, E>
 You can also think of the `map` function as of type: `Result<T -> U, E>`; as in it runs a function on the success side of `Result` leaving the error side untouched.
 
 
-Continue on to [Combining Results](2024-01-24-working-with-rust-result-combining-results.html)
+Continue on to [Combining Results](2024-01-24-working-with-rust-result-part-6.html)

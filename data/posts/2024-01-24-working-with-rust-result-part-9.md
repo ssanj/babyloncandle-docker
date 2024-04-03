@@ -1,5 +1,5 @@
 ---
-title: Working With Rust Result - Combining Results Some More
+title: Working With Rust Result - Combining Results Some More - Part 9
 author: sanjiv sahayam
 description: working with rust result
 tags: Rust
@@ -25,6 +25,16 @@ Notice that the value inside the `Ok` instance is never used:
 
 ```{.rust .scrollx}
 Ok(_) => res,
+```
+
+In summary:
+
+```{.rust .scrollx}
+// pseudocode
+// Given a Result<T, E>
+
+Ok(_:T)  -> res:Result<U, E> -> Result<U, E>  // `Ok` value type changes from `T` from `U`
+Err(e:E) -> Err(e)           -> Result<U, E>  // Notice that the `Err` value type is fixed at: `E`
 ```
 
 This can be useful when you only want to know if something succeeded or failed instead of needing to work on its value.
@@ -56,7 +66,7 @@ fn create_directory_and_then_file(dir_path: &Path, file_name: &str) -> io::Resul
 }
 ```
 
-we can see that we have to ignore the previous success value in `and_then`. This is a little verbose and we can trim it down with `and`:
+We have to ignore the previous success value in `and_then` (as we can't do anything useful with `Unit`). This is a little verbose and we can trim it down with `and`:
 
 ```{.rust .scrollx}
 fn create_directory_and_file(dir_path: &Path, file_name: &str) -> io::Result<File> {
@@ -81,14 +91,14 @@ If you wanted to try an alternative `Result` on `Err` and you didn't care about 
 From the above definition we can see that the value `res` is used only when there is an `Err` instance. If the `Result` is an `Ok` instance, its value
 is returned.
 
-in summary:
+In summary:
 
 ```{.rust .scrollx}
 // pseudocode
 // Given a Result<T, E>
 
-Err(_:E) -> res:Result<T, F>  -> Result<T, F> // Notice that the `Err` type can change from `E` to `F`
-Ok(t:T)  -> Ok(t)             -> Result<T, F> // `Ok` type is fixed: `T`
+Err(_:E) -> res:Result<T, F>  -> Result<T, F> // The `Err` value type changes from `E` to `F`
+Ok(t:T)  -> Ok(t)             -> Result<T, F> // `Ok` value type is fixed: `T`
 ```
 
 It's important to note that `res` dictates the final `Err` type returned from `or` and that the type inside the `Ok` constructor doesn't change. We'll see that come into play in the example below.
@@ -110,7 +120,7 @@ enum MyResult {
 }
 ```
 
-and a function to parse numbers and parse booleans:
+and functions to parse numbers and booleans:
 
 ```{.rust .scrollx}
 fn parse_number(value: &str) -> Result<u32, ParseIntError> {
@@ -201,7 +211,7 @@ The function `res`, passed to `or` dictates the final `Err` type. Also when chai
   }
 ```
 
-The function `op` takes in the `Err` type `E` and returns a `Result` with the same success type `T` and a new error type `F`:
+The function `O` takes in the `Err` type `E` and returns a `Result` with the same success type `T` and a new error type `F`:
 
 ```{.rust .scrollx}
 FnOnce(E) -> Result<T, F>
@@ -212,8 +222,9 @@ In summary:
 ```{.rust .scrollx}
 // pseudocode
 // Given a Result<T, E>
-Err(e:E) -> op(e)  -> Result<T, F> // `Err` type goes from `E` -> `F`
-Ok(t:T)  -> Ok(t)  -> Result<T, F> // `Ok` type is fixed: `T`
+
+Err(e:E) -> op(e)  -> Result<T, F> // `Err` value type goes from `E` -> `F`
+Ok(t:T)  -> Ok(t)  -> Result<T, F> // `Ok` value type is fixed: `T`
 ```
 
 This can be useful when you need access to the error to make a decision about the result to return or when you need to log the error.
@@ -243,4 +254,4 @@ parse_number_somehow("number")
 // Ok(6)
 ```
 
-Continue on to [working with errors](2024-01-24-working-with-rust-result-working-with-errors.html)
+Continue on to [working with errors](2024-01-24-working-with-rust-result-part-10.html)

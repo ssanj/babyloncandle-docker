@@ -1,5 +1,5 @@
 ---
-title: Working With Rust Result - Combining Results the Question Mark Operator
+title: Working With Rust Result - Combining Results the Question Mark Operator - Part 8
 author: sanjiv sahayam
 description: working with rust result
 tags: Rust
@@ -37,7 +37,7 @@ Luckily Rust gives us a simpler way to do this.
 ## The question mark operator
 
 Rust has the [question mark operator](https://doc.rust-lang.org/reference/expressions/operator-expr.html#the-question-mark-operator) (`?`) which allows you to simply
-return an error or extract a success value. You can think of it as an `unwrap` on `Ok` with an immediate return on `Err` instead of panic-ing. Here's another the definition of `and_numbers` which uses the `?` operator:
+return an error or extract a success value. You can think of it as an `unwrap` on `Ok` with an immediate return on `Err`, instead of panic-ing. Here's another the definition of `and_numbers` which uses the `?` operator:
 
 ```{.rust .scrollx}
 fn add_numbers_2(one: &str, two: &str, three: &str) -> Result<u32, ParseIntError> {
@@ -52,8 +52,10 @@ fn add_numbers_2(one: &str, two: &str, three: &str) -> Result<u32, ParseIntError
 
 It's important to note that if any of the `parse_number` function calls return an `Err`, the `add_numbers_2` function would return that `Err` as the final result instead of proceeding to the next line.
 
+> We have to still wrap the final result in an `Ok` constructor as `add_numbers_2` returns a `Result<u32, ParseIntError>`.
+
 We can see that the `add_numbers_2` function is easier to reason about than chaining together `and_then` and `map` calls in the `add_numbers` function. The `?` operator is supported for `Result` and `Option` types at the moment.
 
 
 
-Continue on to [combining some more](2024-01-24-working-with-rust-result-combining-results-combining-some-more.html)
+Continue on to [combining some more](2024-01-24-working-with-rust-result-part-9.html)

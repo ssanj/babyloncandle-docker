@@ -1,5 +1,5 @@
 ---
-title: Working With Rust Result - Extracting Values from a Result Unsafely
+title: Working With Rust Result - Extracting Values Unsafely - Part 3
 author: sanjiv sahayam
 description: working with rust result
 tags: Rust
@@ -21,7 +21,15 @@ where
     E: fmt::Debug,
 ```
 
-We can see that the above definition returns the success type `T` under all conditions. But how can it return a success value `T` if it's an `Err` instance with a value of type `E`?
+The above definition returns the success type `T` under all conditions. But how can it return a success value `T` if it's an `Err` instance with a value of type `E`?
+
+```{.rust .scrollx}
+// pseudocode
+// Given: Result<T, E>
+
+Ok(T)  -> T
+Err(E) -> T // How do we do this?
+```
 
 Unwrap's implementation demonstrates how this is achieved:
 
@@ -51,16 +59,16 @@ let twenty_five_2: u8 = twenty_five(20).unwrap(); // This goes boom! because the
 //called `Result::unwrap()` on an `Err` value: "20 is not 25!"
 ```
 
-Also note that the error `E` has to have an instance of the `Debug` trait. This is so that the error can be written out if the `unwrap` causes a `panic`:
+Also note that the error type `E` has to have an instance of the `Debug` trait. This is so that the error can be written out if the `unwrap` causes a `panic`:
 
 ```{.terminal .scrollx}
 called `Result::unwrap()` on an `Err` value: "20 is not 25!"
 ```
 
 ### expect
-What if we wanted to customize the error message when we failed?
+What if we wanted to customize the error message when we failed dramatically throwing a panic?
 
-We can do that by using `expect` method. `expect` is defined as:
+We can do that by using the `expect` method. `expect` is defined as:
 
 ```{.rust .scrollx}
 pub fn expect(self, msg: &str) -> T
@@ -90,9 +98,9 @@ It's important to note that the value in the `Err`: "20 is not 25!" is still pri
 Ooops! Looks like you're not twenty five
 ```
 
-Panic-ing your program is probably the last thing you want to do; It's something you do when you have no other options. As such it's highly discouraged. Wouldn't it be better to calmly handle any errors and exit gracefully?
+Panic-ing your program is probably the last thing you want to do; It's something you do when you have no other options. As such it's highly discouraged. Wouldn't it be better to calmly handle any errors and exit gracefully? We should only panic when we have no other ways of recovering from the error.
 
 But how do you do that? We've already seen some ways to do that with pattern matching, `map_or_else` and `map_or`. There are other ways which we will look at next.
 
 
-Continue on to [Making Things Safer](2024-01-24-working-with-rust-result-extracting-values-making-things-safer.html)
+Continue on to [Making Things Safer](2024-01-24-working-with-rust-result-part-4.html)

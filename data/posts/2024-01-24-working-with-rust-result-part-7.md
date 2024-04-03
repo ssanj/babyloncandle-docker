@@ -1,5 +1,5 @@
 ---
-title: Working With Rust Result - Combining Results with Map
+title: Working With Rust Result - Combining Results with Map - Part 7
 author: sanjiv sahayam
 description: working with rust result
 tags: Rust
@@ -45,6 +45,8 @@ pub fn map<U, F: FnOnce(T) -> U>(self, op: F) -> Result<U, E> {
 }
 ```
 
+> `map` wraps the result of `F` in an `Ok` constructor for us so we don't have to!
+
 in summary:
 
 ```{.rust .scrollx}
@@ -53,16 +55,17 @@ in summary:
 
 F: T -> U // Convert success value to a U
 
-Ok(t:T)   ->  F(t)  -> U // Return converted value in Ok, as a Result<U, E>
-Err(e:E)            -> E // Return existing error as Result<U, E>
+Ok(t:T)   ->  F(t)  -> Result<U, E>
+Err(e:E)            -> Result<U, E>
 ```
 
-We can see that after we apply the function `F`, we still return a `Result`. This is why we can use `map` within an `and_then` call.
-
-So when do we use `and_then` when chaining `Result`s and when do we use `map`?
+How do we decide when to use `and_then` at the last step of a `Result` chain or whether to use `map`?
 
 > If you need to make a decision about whether to fail or not, then use `and_then` because you
-can return an `Ok` to succeed or an `Err` to fail. If you simply want to work on a the `Ok` side of a previous `Result`, then use `map`.
+can return an `Ok` to succeed or an `Err` to fail. If you simply want to work on the `Ok` side of a previous `Result`, then use `map`.
 
+> This logic works only at the last step of a `Result` chain. If you use `map` where you should have used `and_then`, you will end up with a nested `Result` of the sort: `Result<Result<T, E>,E>` indicating that you should have `and_then`ed where you had previously `map`ped.
 
-Continue on to [The Question Mark Operator](2024-01-24-working-with-rust-result-combining-results-question-mark-operator.html)
+So many rules to keep in mind! If only there were an easier way to combine `Result`s.
+
+Continue on to [The Question Mark Operator](2024-01-24-working-with-rust-result-part-8.html)

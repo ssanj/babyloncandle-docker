@@ -1,5 +1,5 @@
 ---
-title: Working With Rust Result - Extracting Values
+title: Working With Rust Result - Extracting Values - Part 2
 author: sanjiv sahayam
 description: working with rust result
 tags: Rust
@@ -105,4 +105,4 @@ println!("{result1}"); // You have failed :(
 println!("{result2}"); // Here's your certificate, for a magnificent grade of: 75
 ```
 
-Continue on to [Being Unsafe](2024-01-24-working-with-rust-result-extracting-values-unsafe.html)
+Continue on to [Being Unsafe](2024-01-24-working-with-rust-result-part-3.html)
