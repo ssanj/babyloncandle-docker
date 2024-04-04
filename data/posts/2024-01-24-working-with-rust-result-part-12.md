@@ -160,4 +160,4 @@ A simple example is to testing whether a number is an invalid digit:
 ```
 
 
-You're almost at the end! Continue on to the [Summary](2024-01-24-working-with-rust-result-part-13.html)
+You're almost at the end! Continue on to the [Asides](2024-01-24-working-with-rust-result-part-13.html)
