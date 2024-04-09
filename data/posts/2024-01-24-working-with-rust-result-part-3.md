@@ -49,6 +49,10 @@ fn unwrap_failed(msg: &str, error: &dyn fmt::Debug) -> ! {
 }
 ```
 
+On an `Err` the `unwrap_failed` function is called, which `panic`s. This explains how we can always return an value of type `T` even when we don't have one.
+
+<img src="/images/2024-01-24-working-with-rust-result/unwrap.png" width="600" />
+
 Since we don't have some sort of default value for `T` supplied, this function `panic`s when the result is an `Err`:
 
 ```{.rust .scrollx}
@@ -82,7 +86,7 @@ where
 }
 ```
 
-Similar to the definition for `unwrap`, a success type of `T` is always returned or the function panics:
+Similar to the definition for `unwrap`, a success type of `T` is always returned or the function panics, but this time with a message we supply:
 
 ```{.rust .scrollx}
 let twenty_five_1: u8 = twenty_five(25).expect("Ooops! Looks like you're not twenty five"); // This works because the result is 'Ok'
@@ -98,7 +102,7 @@ It's important to note that the value in the `Err`: "20 is not 25!" is still pri
 Ooops! Looks like you're not twenty five
 ```
 
-Panic-ing your program is probably the last thing you want to do; It's something you do when you have no other options. As such it's highly discouraged. Wouldn't it be better to calmly handle any errors and exit gracefully? We should only panic when we have no other ways of recovering from the error.
+Panic-ing your program is probably the last thing you want to do; It's something you do when you have no other options. As such it's highly discouraged. We should only panic when we have no other ways of recovering from the error.
 
 But how do you do that? We've already seen some ways to do that with pattern matching, `map_or_else` and `map_or`. There are other ways which we will look at next.
 

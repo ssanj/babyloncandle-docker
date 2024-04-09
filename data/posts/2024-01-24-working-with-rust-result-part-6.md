@@ -22,21 +22,23 @@ pub fn and_then<U, F: FnOnce(T) -> Result<U, E>>(self, op: F) -> Result<U, E> {
 }
 ```
 
-From the above definition, the function `F` is run on the success value within an `Ok` instance. This is very similar to `map`. The main difference is that the function `F` returns another `Result` instead of another type.
+From the above definition, the function `op` is run on the success value within an `Ok` instance. This is very similar to `map`, with the main difference being that the function `op` returns another `Result` instead of another type. It's important to note that since `op` returns a `Result` we can choose whether to return an `Ok` or `Err` instance at this point. `and_then` gives us power to make a decision.
 
-> Unlike `map` there is no wrapping of the result in an `Ok` constructor as `F` already returns a `Result`.
+> Unlike `map` there is no wrapping of the result in an `Ok` constructor as `op` already returns a `Result`.
 
 ```{.rust .scrollx}
 // pseudocode
 // Given: Result<T, E>
+// Return type: Result<U, E>
 
-F: T -> Result<U, E> // Converts a success value into another Result
+op: T -> Result<U, E> // Converts a success value into another Result (Ok or Err)
 
-Ok(t:T)   ->  F(t)  -> Ok(U)  // Return converted value in Ok, as a Result<U, E>
-Err(e:E)            -> Err(e) // Return existing error as Result<U, E>
+Ok(t:T)   ->  op(t)  -> Ok(U) or Err(E) // Return converted value in Ok as a Result<U, E>
+Err(e:E)             -> Err(e)          // Return existing error as Result<U, E>
 ```
+<img src="/images/2024-01-24-working-with-rust-result/and-then.png" width="600" />
 
-Given the following function that parses a string to a `u32` or a returns a [ParseIntError](https://doc.rust-lang.org/std/num/struct.ParseIntError.html):
+Given the following function that parses a string to a `u32` or returns a [ParseIntError](https://doc.rust-lang.org/std/num/struct.ParseIntError.html):
 
 ```{.rust .scrollx}
 use std::num::ParseIntError;
@@ -74,7 +76,7 @@ If we want to fail our calculation for some reason we can return an `Err`:
 ```{.rust .scrollx}
 struct MyError(String);
 
-parse_number("10")
+parse_number("10") // Result<u32, ParseIntError>
 .and_then(|one| {
     // We have successfully parsed "10" into 10.
     parse_number("20")
@@ -82,9 +84,9 @@ parse_number("10")
           // We have successfully parsed "20" into 20.
           // but we don't like even numbers...
           if two % 2 == 0 {
-              Err(MyError("I don't add even numbers".to_owned()))
+              Err(MyError("I don't add even numbers".to_owned())) // Result<u32, MyError>
           } else {
-              Ok(one + two)
+              Ok(one + two) // Result<u32, ParseIntError>
           }
       })
 })
@@ -110,13 +112,13 @@ help: the type constructed contains `MyError` due to the type of the argument pa
     |                       this argument influences the type of `Err`
 ```
 
-which points to the real cause:
+Which points to the real cause:
 
 > expected `ParseIntError`, found `MyError`
 
 
 What this means is that when you are chaining `Result`s through `and_then` functions, all the `Err` types need to be the same. We can change the `Ok` type as
-much as we want but we have to `align` the errors. This is just something to keep in mind when using `Result`. If you have functions that return `Result`s with different
+much as we want but we have to `align` the `Err` types. This is just something to keep in mind when using `Result`. If you have functions that return `Result`s with different
 `Err` types, you can create a common error type and convert each error into that type using something like `map_err`, which we will cover later.
 
 

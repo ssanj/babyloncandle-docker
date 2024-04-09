@@ -15,11 +15,11 @@ enum Result<T, E> {
 }
 ```
 
-<img src="/images/2024-01-24-working-with-rust-result/rust-result-structure.png" width="600" />
+<img src="/images/2024-01-24-working-with-rust-result/rust-result-type-2.png" width="600" />
 
 You can think of `Ok` and `Err` as just wrappers around the actual values. That way if you see an `Ok` instance you know it has a success value wrapped "inside" it. Similarly when you get an `Err` instance, you know that it has an error value wrapped "inside" it. If you find this confusing, you can think of the `Ok` and `Err` constructors as "markers" indicating what the value they have is: either a success or error, respectively.
 
-The first type variable `T`, represents the success **value** while, the second type `E`, represents the error **value**:
+The first type variable `T`, represents the success **type** while, the second type `E`, represents the error **type**:
 
 ```{.rust .scrollx}
 /// T -> Success type
@@ -59,10 +59,10 @@ From the above `Result` type:
  // E = String
 ```
 
-we know that a `u8` will be the success type (`T`) and a `String` will be the error type (`E`).
+We know that a `u8` will be the success type (`T`) and a `String` will be the error type (`E`).
 
-> Note: It's not recommended to use `String`s for error values because the compiler doesn't
-help you if you forget to handle a particular `String`. A better alternative is to use an `enum` of error values. We'll see an example of that later.
+> Note: It's not recommended to use `String`s for error types because the compiler doesn't
+help you if you forget to handle a particular `String`. A better alternative is to use an `enum` of error types. We'll see an example of that later.
 
 If we wanted to print the output of calls to the above function, we could do something like this:
 
@@ -74,6 +74,6 @@ println!("{:?}", twenty_five(35))  // Err("35 is not 25!")
 
 We have used the debug syntax (`{:?}`) to display the value of the `Result` in the above example.
 
-What if we want to actually get the success or error value "out" of a `Result` instead of just printing it?
+What if we want to actually get the success or error value "out" of a `Result` instead of just printing it? Let's look at how we can shed the `Result` wrappers and get at the values inside.
 
 Continue to [Extracting Values](2024-01-24-working-with-rust-result-part-2.html)

@@ -36,16 +36,19 @@ pub fn map_or_else<U, D: FnOnce(E) -> U, F: FnOnce(T) -> U>(self, default: D, f:
 }
 ```
 
-In the above definition we get two functions: `D` and `F`. Both functions convert a value into the same result type `U`:
+In the above definition we get two functions: `default` and `f`. Both functions convert a value into the same result type `U`:
 
 ```{.rust .scrollx}
 // pseudocode
 
-F: T -> U // Convert success value to a U
-D: E -> U // Convert error value to a U
+f      : T -> U // Convert success value to a U
+default: E -> U // Convert error value to a U
 ```
 
- `D` is used on the error value inside an `Err` instance and `F` is used on the success value inside an `Ok` instance. `map_or_else` has simply extracted the "wrapped" value in each constructor and run a function on each of those values to produce a result of the same type in all cases: `U`.
+ `default` is used on the error value inside an `Err` instance and `f` is used on the success value inside an `Ok` instance. `map_or_else` has simply extracted the "wrapped" value in each constructor and run a function on each of those values to produce a result of the same type in all cases: `U`.
+
+<img src="/images/2024-01-24-working-with-rust-result/map-or-else.png" width="600" />
+
 
  It's important to note that the return type of this function is: `U` and not a `Result`. We have left the confines of our `Result` wrappers.
 
@@ -84,18 +87,20 @@ pub fn map_or<U, F: FnOnce(T) -> U>(self, default: U, f: F) -> U {
 
 > Note how we ignore the value inside of `Err` with `Err(_)`.
 
-In the above definition, a function `F` runs on the value inside the `Ok` instance and a default value is returned if it's an `Err` instance:
+In the above definition, a function `f` runs on the value inside the `Ok` instance and a `default` value is returned if it's an `Err` instance:
 
 ```{.rust .scrollx}
 // pseudocode
 
-F      : T -> U // Convert success value to a U
+f      : T -> U // Convert success value to a U
 default:   -> U // Return a U if in error
 ```
 
 Notice that we completely ignore the value inside of the `Err` instance.
 
-`map_or` differs from `map_or_else`, in that it only takes a single function `F` and a default value to return in the `Err` case. This can be useful if you don't care about what the error case was and simple want to return some default value.
+<img src="/images/2024-01-24-working-with-rust-result/map-or.png" width="600" />
+
+`map_or` differs from `map_or_else`, in that it only takes a single function `f` and a default value to return in the `Err` case. This can be useful if you don't care about what the error case  and simple want to return some default value on error.
 
 ```{.rust .scrollx}
 let result1 = pass_or_fail(45).map_or("You failed :(".to_owned(), |t| t);

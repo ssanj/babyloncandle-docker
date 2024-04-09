@@ -14,12 +14,12 @@ We can `unwrap` a `Result` safely, if we provide a default value of type `T` or 
 // Given: Result<T, E>
 
 Ok(T)  -> T
-Err(E) -> T // return value of `T` or a use a function of type `E` -> `T`
+Err(_) -> T // Return value of `T`
+Err(E) -> T // Use a function of type `E` -> `T`
 ```
 
 ### unwrap_or
 
-`unwrap_or` is defined as:
 `unwrap_or` is defined as:
 
 ```{.rust .scrollx}
@@ -31,7 +31,7 @@ pub fn unwrap_or(self, default: T) -> T {
 }
 ```
 
-In the above definition we supply a default value of type `T`. This default value will be used when there is an `Err`, the `Ok` value will be returned otherwise. This is very similar to `map_or` but where we don't run a function on the success value:
+In the above definition we supply a `default` value of type `T`. This default value will be used when there is an `Err`, the `Ok` value will be returned otherwise. This is very similar to `map_or` but where we don't run a function on the success value:
 
 ```{.rust .scrollx}
 // pseudocode
@@ -39,6 +39,8 @@ In the above definition we supply a default value of type `T`. This default valu
 Ok(t)   ->  t       // Return value in Ok
 Err(e)  ->  default // Return default if in error
 ```
+
+<img src="/images/2024-01-24-working-with-rust-result/unwrap-or.png" width="600" />
 
 Here's an example of using `unwrap_or` to do just that:
 
@@ -49,7 +51,7 @@ let twenty_five_or_ten_2: u8 = twenty_five(25).unwrap_or(10); // 25
 
 ### unwrap_or_else
 
-There's a similarly named function called `unwrap_or_else`. The main difference being that `unwrap_or_else` takes in a function that is called when an `Err` is returned:
+There's a similarly named function called `unwrap_or_else`. The main difference being that `unwrap_or_else` takes in a function `op` that is called when an `Err` is returned:
 
 ```{.rust .scrollx}
 pub fn unwrap_or_else<F: FnOnce(E) -> T>(self, op: F) -> T {
@@ -63,9 +65,11 @@ pub fn unwrap_or_else<F: FnOnce(E) -> T>(self, op: F) -> T {
 ```{.rust .scrollx}
 // pseudocode
 
-Ok(t)   ->  t    -> T // Return value in Ok
-Err(e)  ->  F(e) -> T // Call F on the error
+Ok(t)   ->  t     -> T // Return value in Ok
+Err(e)  ->  op(e) -> T // Convert the value in Err to a `T`
 ```
+
+<img src="/images/2024-01-24-working-with-rust-result/unwrap-or-else-2.png" width="600" />
 
 This is very similar to the `map_or_else` function but where a function is only applied to the error case and not the success case.
 
@@ -88,11 +92,11 @@ where
 In the above definition, if a `Result` is an `Err` then the default instance of type `T` is used. The type `T` has a constraint on it that requires that it has an instance of the [Default](https://doc.rust-lang.org/std/default/trait.Default.html) trait: `T: Default`. Here's an example of how to use it:
 
 ```{.rust .scrollx}
-  let result_ok: Result<u32, String> = Ok(1);
-  let result_err: Result<u32, String> = Err("You have errors".to_owned());
+let result_ok: Result<u32, String> = Ok(1);
+let result_err: Result<u32, String> = Err("You have errors".to_owned());
 
-  result_ok.unwrap_or_default();  // 1
-  result_err.unwrap_or_default(); // 0
+result_ok.unwrap_or_default();  // 1
+result_err.unwrap_or_default(); // 0
 ```
 
 This is also very similar to `unwrap_or` where, we supply a default value for the error case. In `unwrap_or_default` the default value is derived from the `Default` instance for type `T`:

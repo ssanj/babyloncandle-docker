@@ -45,18 +45,19 @@ pub fn map<U, F: FnOnce(T) -> U>(self, op: F) -> Result<U, E> {
 }
 ```
 
-> `map` wraps the result of `F` in an `Ok` constructor for us so we don't have to!
+> `map` wraps the result of `op` in an `Ok` constructor for us so we don't have to!
 
-in summary:
+In summary:
 
 ```{.rust .scrollx}
 // pseudocode for map
-// Given a Result<T, E>
+// Given: Result<T, E>
+// Return type: Result<U, E>
 
-F: T -> U // Convert success value to a U
+op: T -> U // Convert success value to a U
 
-Ok(t:T)   ->  F(t)  -> Result<U, E>
-Err(e:E)            -> Result<U, E>
+Ok(t:T)   ->  op(t) -> U -> Ok(U)  // Return converted value in Ok, as a Result<U, E>
+Err(e:E)                 -> Err(e) // Return existing error as Result<U, E>
 ```
 
 How do we decide when to use `and_then` at the last step of a `Result` chain or whether to use `map`?
