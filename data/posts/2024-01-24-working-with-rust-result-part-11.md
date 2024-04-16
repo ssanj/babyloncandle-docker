@@ -27,11 +27,15 @@ In summary:
 
 ```{.rust .scrollx}
 // pseudocode
-// Given a Result<T, E>
+// Given: Result<T, E>
+// Result type: Option<T>
 
 Ok(t:T) -> Some(t) // Option<T>
 Err(_)  -> None    // Option<T>
 ```
+
+<img src="/images/2024-01-24-working-with-rust-result/ok.png" width="600" />
+
 
 For example, to only get a list of valid numbers from a list strings, we could use [filter_map](https://doc.rust-lang.org/std/iter/trait.Iterator.html#method.filter_map). `filter_map` filters and maps at the same time, only returning values that are wrapped in a `Some`  constructor:
 
@@ -70,11 +74,15 @@ In summary:
 
 ```{.rust .scrollx}
 // pseudocode
-// Given a Result<T, E>
+// Given: Result<T, E>
+// Result type: Option<T>
 
 Err(e:E) -> Some(e) // Option<E>
 Ok(_)    -> None    // Option<E>
 ```
+
+<img src="/images/2024-01-24-working-with-rust-result/err.png" width="600" />
+
 For example, if we only wanted invalid numbers from our list of possible numbers, we could use:
 
 ```{.rust .scrollx}
@@ -111,11 +119,14 @@ In summary:
 ```{.rust .scrollx}
 // pseudocode
 // Given a Result<Option<T>, E>
+// Result type: Option<Result<T, E>>
 
 Ok(Some(t:T))  -> Some(Ok(t))    // Option<Result<T, E>>
 Ok(None)       -> None           // Option<Result<T, E>>
 Err(e:E)       -> Some(Err(e))   // Option<Result<T, E>>
 ```
+
+<img src="/images/2024-01-24-working-with-rust-result/transpose.png" width="600" />
 
 We are basically flipping the containers; going from `Result<Option<T>, E>` to a `Option<Result<T, E>>`.
 

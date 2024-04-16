@@ -15,7 +15,7 @@ let numbers_3 = add_numbers("10", "twenty", "30"); // Err(ParseIntError { kind: 
 let numbers_4 = add_numbers("10", "20", "thirty"); // Err(ParseIntError { kind: InvalidDigit })
 ```
 
-Here's what `add_numbers` would look like:
+Here's the definition of `add_numbers`:
 
 ```{.rust .scrollx}
 fn add_numbers(one: &str, two: &str, three: &str) -> Result<u32, ParseIntError> {
@@ -30,14 +30,17 @@ fn add_numbers(one: &str, two: &str, three: &str) -> Result<u32, ParseIntError> 
 }
 ```
 
-This is similar what we did with two numbers parsed from `Result`. But as we can see this is quickly becoming hard to reason about.
-Luckily Rust gives us a simpler way to do this.
+This is similar to how we previously parsed two numbers. This is quickly becoming hard to reason about. Parsing more numbers like this would be almost unmaintainable. Luckily Rust gives us a simpler way to do this.
 
 
 ## The question mark operator
 
 Rust has the [question mark operator](https://doc.rust-lang.org/reference/expressions/operator-expr.html#the-question-mark-operator) (`?`) which allows you to simply
-return an error or extract a success value. You can think of it as an `unwrap` on `Ok` with an immediate return on `Err`, instead of panic-ing. Here's another the definition of `and_numbers` which uses the `?` operator:
+return an error or extract a success value. You can think of it as an `unwrap` on `Ok` with an immediate return on `Err`, instead of panic-ing.
+
+<img src="/images/2024-01-24-working-with-rust-result/question-mark-operator.png" width="600" />
+
+Here's another the definition of `and_numbers` which uses the `?` operator:
 
 ```{.rust .scrollx}
 fn add_numbers_2(one: &str, two: &str, three: &str) -> Result<u32, ParseIntError> {
@@ -54,7 +57,7 @@ It's important to note that if any of the `parse_number` function calls return a
 
 > We have to still wrap the final result in an `Ok` constructor as `add_numbers_2` returns a `Result<u32, ParseIntError>`.
 
-We can see that the `add_numbers_2` function is easier to reason about than chaining together `and_then` and `map` calls in the `add_numbers` function. The `?` operator is supported for `Result` and `Option` types at the moment.
+We can see that the `add_numbers_2` function is easier to reason about than chaining together `and_then` and `map` calls as in the `add_numbers` function. The `?` operator is supported for `Result` and `Option` types at the moment.
 
 
 

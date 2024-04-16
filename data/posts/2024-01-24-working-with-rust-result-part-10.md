@@ -21,15 +21,22 @@ pub fn map_err<F, O: FnOnce(E) -> F>(self, op: O) -> Result<T, F> {
 }
 ```
 
+In the definition above, the function `op` is run on the value inside the `Err` instance, and then wrapped back in an `Err` constructor. The `Ok` instance is not changed. This is similar to how the `map` function works but on the `Err` side.
+
 In summary:
 
 ```{.rust .scrollx}
 // pseudocode
-// Given a Result<T, E>
+// Given: Result<T, E>
+// Return type: Result<T, F>
 
-Err(e:E) -> op(e)  -> F  -> Result<T, F>  // `Err` value type goes from `E` -> `F` and is wrapped in an `Err`
-Ok(t:T)  -> Ok(t)        -> Result<T, F>  // `Ok` value type is fixed: `T`
+op: E -> F // Convert error value to an F
+
+Err(e:E) -> op(e)  -> F  -> Err(F)  // `Err` value type goes from `E` -> `F` and is wrapped in an `Err`
+Ok(t:T)                  -> Ok(t)   // `Ok` value type is fixed: `T`
 ```
+
+<img src="/images/2024-01-24-working-with-rust-result/map-err.png" width="600" />
 
 Here's an example where we need to convert a `ParseBoolError` type to `MyError`:
 
@@ -60,15 +67,20 @@ where
 }
 ```
 
+In the definition above, we can see that the value inside the `Err` instance is returned and on an `Ok` instance the `unwrap_failed` function is called which leads to a panic. This is similar to the `unwrap` function but panicing on `Ok` instead of `Err`.
+
+
 In summary:
 
 ```{.rust .scrollx}
 // pseudocode
-// Given a Result<T, E>
+// Given: Result<T, E>
 
-Err(e:E) -> E     // Returns the error in the Err
+Err(e:E) -> E     // Returns the error value inside the Err
 Ok(_)    -> panic // Panics on any Ok value
 ```
+
+<img src="/images/2024-01-24-working-with-rust-result/unwrap-err.png" width="600" />
 
 For example, if we try to unwrap a success value:
 
@@ -76,7 +88,7 @@ For example, if we try to unwrap a success value:
 parse_bool("true").unwrap_err() // panics - called `Result::unwrap_err()` on an `Ok` value: true
 ```
 
-when used on an error:
+When used on an error:
 
 ```{.rust .scrollx}
 parse_bool("ten").unwrap_err() // ParseBoolError
@@ -100,11 +112,13 @@ pub fn expect_err(self, msg: &str) -> E
     }
 ```
 
+In the definition above, we can see that the value inside the `Err` instance is returned and on an `Ok` instance the `unwrap_failed` function is called with the supplied `msg` which leads to a panic. This is similar to the `expect` function but panicing on `Ok` instead of `Err`.
+
 In summary:
 
 ```{.rust .scrollx}
 // pseudocode
-// Given a Result<T, E>
+// Given: Result<T, E>
 
 Err(e:E) -> E     // Returns the error in the Err
 Ok(_)    -> panic // Panics on any Ok value with the supplied message
@@ -116,7 +130,7 @@ For example, if we try to unwrap a success value:
 parse_bool("true").expect_err("This should not be bool") // panics - This should not be bool: true
 ```
 
-when used on an error:
+When used on an error:
 
 ```{.rust .scrollx}
 parse_bool("ten").expect_err("This should not be bool") // ParseBoolError

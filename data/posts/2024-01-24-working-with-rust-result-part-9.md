@@ -32,6 +32,7 @@ In summary:
 ```{.rust .scrollx}
 // pseudocode
 // Given a Result<T, E>
+// Return typr: Result<U, E>
 
 Ok(_:T)  -> res:Result<U, E> -> Result<U, E>  // `Ok` value type changes from `T` from `U`
 Err(e:E) -> Err(e)           -> Result<U, E>  // Notice that the `Err` value type is fixed at: `E`
@@ -39,7 +40,7 @@ Err(e:E) -> Err(e)           -> Result<U, E>  // Notice that the `Err` value typ
 
 This can be useful when you only want to know if something succeeded or failed instead of needing to work on its value.
 
-Take creating a directory and then creating a file in that directory only if the directory creation succeeded.
+Take creating a directory and subsequently creating a file in that directory only if the directory creation succeeded.
 
 We can create a directory with the `create_dir` function from the `std::fs` module:
 
@@ -88,20 +89,23 @@ If you wanted to try an alternative `Result` on `Err` and you didn't care about 
  }
 ```
 
-From the above definition we can see that the value `res` is used only when there is an `Err` instance. If the `Result` is an `Ok` instance, its value
+In the definition above the value `res` is used only when there is an `Err` instance. If the `Result` is an `Ok` instance, its value
 is returned.
 
 In summary:
 
 ```{.rust .scrollx}
 // pseudocode
-// Given a Result<T, E>
+// Given: Result<T, E>
+// Return type: Result<T, F>
 
 Err(_:E) -> res:Result<T, F>  -> Result<T, F> // The `Err` value type changes from `E` to `F`
 Ok(t:T)  -> Ok(t)             -> Result<T, F> // `Ok` value type is fixed: `T`
 ```
 
 It's important to note that `res` dictates the final `Err` type returned from `or` and that the type inside the `Ok` constructor doesn't change. We'll see that come into play in the example below.
+
+<img src="/images/2024-01-24-working-with-rust-result/or.png" width="600" />
 
 Here's an example of where we can try one of several parse functions until we find one that succeeds.
 
@@ -120,7 +124,7 @@ enum MyResult {
 }
 ```
 
-and functions to parse numbers and booleans:
+And functions to parse numbers and booleans:
 
 ```{.rust .scrollx}
 fn parse_number(value: &str) -> Result<u32, ParseIntError> {
@@ -134,7 +138,7 @@ fn parse_bool(value: &str) -> Result<bool, ParseBoolError> {
 
 One thing to note is that both functions return different error types in `Err`: `ParseIntError` and [ParseBoolError](https://doc.rust-lang.org/std/str/struct.ParseBoolError.html) respectively.
 
-How would we combine these functions into parsing a string slice into a type of `MyResult`? Oh, and we also don't support converting a string that is all caps into `MyResult`. That would be an error.
+How would we combine these functions into parsing a string slice into a type of `MyResult`? And we also don't support converting a string that is all caps into `MyResult`. That would be an error.
 
 `Note` that we don't need to align the error types here as mentioned before because the `Result` passed to `or` would change the final `Err` type as required.
 
@@ -211,7 +215,7 @@ The function `res`, passed to `or` dictates the final `Err` type. Also when chai
   }
 ```
 
-The function `O` takes in the `Err` type `E` and returns a `Result` with the same success type `T` and a new error type `F`:
+The function `op` takes in the `Err` type `E` and returns a `Result` with the same success type `T` and a new error type `F`:
 
 ```{.rust .scrollx}
 FnOnce(E) -> Result<T, F>
@@ -221,7 +225,8 @@ In summary:
 
 ```{.rust .scrollx}
 // pseudocode
-// Given a Result<T, E>
+// Given: Result<T, E>
+// Return type: Result<T, F>
 
 Err(e:E) -> op(e)  -> Result<T, F> // `Err` value type goes from `E` -> `F`
 Ok(t:T)  -> Ok(t)  -> Result<T, F> // `Ok` value type is fixed: `T`

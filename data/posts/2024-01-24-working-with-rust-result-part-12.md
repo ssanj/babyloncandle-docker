@@ -6,7 +6,7 @@ tags: Rust
 comments: true
 ---
 
-`Result` has some functions that let you figure out if it's a success or error value. We'll look at those functions next.
+`Result` has some functions that let you figure out if an instance is a success or error value. We'll look at those functions next.
 
 ### is_ok
 
@@ -24,11 +24,14 @@ In summary:
 
 ```{.rust .scrollx}
 // pseudocode
-// Given a Result<T, E>
+// Given: Result<T, E>
+// Return type: bool
 
 Ok(_)  -> true  // bool
 Err(_) -> false // bool
 ```
+
+<img src="/images/2024-01-24-working-with-rust-result/is-ok-3.png" width="600" />
 
 For example:
 
@@ -61,11 +64,14 @@ In summary:
 
 ```{.rust .scrollx}
 // pseudocode
-// Given a Result<T, E>
+// Given: Result<T, E>
+// Return type: bool
 
 Ok(_)  -> false  // bool
 Err(_) -> true   // bool
 ```
+
+<img src="/images/2024-01-24-working-with-rust-result/is-err-3.png" width="600" />
 
 For example:
 
@@ -104,12 +110,16 @@ In summary:
 
 ```{.rust .scrollx}
 // pseudocode
-// Given a Result<T, E>
+// Given: Result<T, E>
+// Return type: bool
 
 f: T    -> bool
+
 Ok(t:T) -> f(t)   -> true|false  // bool
 Err(_)  -> false                 // bool
 ```
+
+<img src="/images/2024-01-24-working-with-rust-result/is-ok-and-2.png" width="600" />
 
 A simple example is testing whether a number is greater than 10:
 
@@ -140,12 +150,16 @@ In summary:
 
 ```{.rust .scrollx}
 // pseudocode
-// Given a Result<T, E>
+// Given: Result<T, E>
+// Return type: bool
 
 f: E     -> bool
+
 Ok(_)    -> false                // bool
 Err(e:E) -> f(e) -> true|false   // bool
 ```
+
+<img src="/images/2024-01-24-working-with-rust-result/is-err-and-2.png" width="600" />
 
 A simple example is to testing whether a number is an invalid digit:
 
