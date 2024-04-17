@@ -1,7 +1,7 @@
 ---
 title: Working With Rust Result - Asides - Part 13
 author: sanjiv sahayam
-description: working with rust result
+description: Working with Rust Result - Asides
 tags: Rust
 comments: true
 ---
@@ -42,12 +42,14 @@ Essentially giving you:
 pub type Result<T> = Result<T, std::io::Error>;
 ```
 
-With a type alias like above, we don't have to constantly specify a type for a `Result`'s error. This is useful where a particular module usually returns the same error type for most or all of its functions. For example, all `std::io` functions that return `Result` use `std::io::Error` as the error type.
+<img src="/images/2024-01-24-working-with-rust-result/std-alias.png" width="600" />
+
+With a type alias like above, we don't have to constantly specify a type for a `Result`'s error. This is useful where many methods return the same error type. For example, all `std::io` methods that return `Result` use `std::io::Error` as the error type.
 
 
 ## Strict vs Laziness
 
-There's a distinction that applies to all `_or` and `_or_else` variants. Let's take `unwrap_or` and `unwrap_or_else` as an example. As a refresher, here are the definitions for both functions.
+There's a distinction that applies to all `_or` and `_or_else` variants for `Result` methods. Let's take `unwrap_or` and `unwrap_or_else` as an example. As a refresher, here are the definitions for both functions.
 
 `unwrap`:
 
@@ -71,7 +73,7 @@ pub fn unwrap_or_else<F: FnOnce(E) -> T>(self, op: F) -> T {
 }
 ```
 
-With `unwrap_or_else`, the function supplied (`op`) will not get called unless there is an `Err` value to call it with. This is different to `unwrap_or`'s default value which is evaluated on `Ok` values as well:
+With `unwrap_or_else`, the function supplied (`op`) will not get called unless there is an `Err` value to call it with; it will not get called on `Ok` values. This is different to `unwrap_or`'s default value which is evaluated on `Ok` values as well:
 
 ```{.rust .scrollx}
   let strict_result_ok: Result<u32, String> = Ok(1);
@@ -84,10 +86,10 @@ With `unwrap_or_else`, the function supplied (`op`) will not get called unless t
 
 <p/>
 
-You can think of `unwrap_or` as being "strict" or "eager" in its evaluation of the `default` parameter - it always evaluates the default value on `Ok` and `Err`. `unwrap_or_else` can be thought of as "lazy" or "evaluated when needed" - it only runs when the value returned is an `Err`.
+You can think of `unwrap_or` as being "strict" or "eager" in its evaluation of the `default` parameter - it always evaluates the default value on `Ok` and `Err`. The `op` function in `unwrap_or_else` can be thought of as "lazy" or "evaluated when needed" - it only runs when the value returned is an `Err` (as functions can only get called with their input parameters).
 
 <p/>
 
-In general prefer `or_else` version of a function if you don't want your code running until there is a reason to. The `_or` variant is fine if your default value is a constant or has been already evaluated.
+In general prefer the `or_else` version of a function if you don't want your code running until there is an `Err`. The `_or` variant is fine if your `default` value is a constant or has been already evaluated.
 
 Continue on to [Summary](2024-01-24-working-with-rust-result-part-14.html)

@@ -1,7 +1,7 @@
 ---
 title: Working With Rust Result
 author: sanjiv sahayam
-description: working with rust result
+description: Working with rust result - What is a Result?
 tags: Rust
 comments: true
 ---

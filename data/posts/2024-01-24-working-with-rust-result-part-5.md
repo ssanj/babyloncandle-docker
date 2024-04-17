@@ -1,7 +1,7 @@
 ---
 title: Working With Rust Result - Tranforming Values - Part 5
 author: sanjiv sahayam
-description: working with rust result
+description: Working with Rust Result - Transforming values
 tags: Rust
 comments: true
 ---

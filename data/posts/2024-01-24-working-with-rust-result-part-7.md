@@ -1,7 +1,7 @@
 ---
 title: Working With Rust Result - Combining Results with Map - Part 7
 author: sanjiv sahayam
-description: working with rust result
+description: Working with Rust Result - Combining Results with Map
 tags: Rust
 comments: true
 ---

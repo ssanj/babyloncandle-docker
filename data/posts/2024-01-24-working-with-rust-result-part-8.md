@@ -1,7 +1,7 @@
 ---
 title: Working With Rust Result - Combining Results the Question Mark Operator - Part 8
 author: sanjiv sahayam
-description: working with rust result
+description: Working with Rust Result - Combining Results with the Question Mark Operator
 tags: Rust
 comments: true
 ---

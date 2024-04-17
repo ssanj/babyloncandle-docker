@@ -1,7 +1,7 @@
 ---
 title: Working With Rust Result - Extracting Values from a Result Safely - Part 4
 author: sanjiv sahayam
-description: working with rust result
+description: Working with Rust Result - Extracting values more safely
 tags: Rust
 comments: true
 ---

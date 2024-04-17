@@ -1,7 +1,7 @@
 ---
 title: Working With Rust Result - Conversion to Option - Part 11
 author: sanjiv sahayam
-description: working with rust result
+description: Working with Rust Result - Converion to Option
 tags: Rust
 comments: true
 ---

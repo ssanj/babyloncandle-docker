@@ -1,7 +1,7 @@
 ---
 title: Working With Rust Result - Combining Results Some More - Part 9
 author: sanjiv sahayam
-description: working with rust result
+description: Working with Rust Result - Combining Results some more
 tags: Rust
 comments: true
 ---

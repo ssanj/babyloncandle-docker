@@ -1,7 +1,7 @@
 ---
 title: Working With Rust Result - Summary - Part 14
 author: sanjiv sahayam
-description: working with rust result
+description: Working with Rust Result - Summary of Result methods
 tags: Rust
 comments: true
 ---
