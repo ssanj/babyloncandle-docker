@@ -259,4 +259,4 @@ parse_number_somehow("number")
 // Ok(6)
 ```
 
-Continue on to [working with errors](2024-01-24-working-with-rust-result-part-10.html)
+Continue on to [Working with Errors](2024-01-24-working-with-rust-result-part-10.html)

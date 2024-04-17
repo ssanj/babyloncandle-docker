@@ -61,4 +61,4 @@ We can see that the `add_numbers_2` function is easier to reason about than chai
 
 
 
-Continue on to [combining some more](2024-01-24-working-with-rust-result-part-9.html)
+Continue on to [Combining Results Some More](2024-01-24-working-with-rust-result-part-9.html)

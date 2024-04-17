@@ -143,6 +143,6 @@ parse_number("10")
 })
 ```
 
-Continue on to [Combining with Map](2024-01-24-working-with-rust-result-part-7.html)
+Continue on to [Chaining with Map](2024-01-24-working-with-rust-result-part-7.html)
 
 

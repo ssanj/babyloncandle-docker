@@ -1,7 +1,7 @@
 ---
-title: Working With Rust Result - Combining Results with Map - Part 7
+title: Working With Rust Result - Chaining with Map - Part 7
 author: sanjiv sahayam
-description: Working with Rust Result - Combining Results with Map
+description: Working with Rust Result - Chaining with Map
 tags: Rust
 comments: true
 ---
@@ -69,4 +69,4 @@ can return an `Ok` to succeed or an `Err` to fail. If you simply want to work on
 
 So many rules to keep in mind! If only there were an easier way to combine `Result`s.
 
-Continue on to [The Question Mark Operator](2024-01-24-working-with-rust-result-part-8.html)
+Continue on to [Combining Results the Question Mark Operator](2024-01-24-working-with-rust-result-part-8.html)

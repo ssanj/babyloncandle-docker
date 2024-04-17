@@ -1,7 +1,7 @@
 ---
-title: Working With Rust Result - Extracting Values from a Result Safely - Part 4
+title: Working With Rust Result - Making Things Safer with Fallbacks - Part 4
 author: sanjiv sahayam
-description: Working with Rust Result - Extracting values more safely
+description: Working with Rust Result - Extracting values more safely with fallbacks
 tags: Rust
 comments: true
 ---

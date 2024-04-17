@@ -107,4 +107,4 @@ Panic-ing your program is probably the last thing you want to do; It's something
 But how do you do that? We've already seen some ways to do that with pattern matching, `map_or_else` and `map_or`. There are other ways which we will look at next.
 
 
-Continue on to [Making Things Safer](2024-01-24-working-with-rust-result-part-4.html)
+Continue on to [Making Things Safer with Fallbacks](2024-01-24-working-with-rust-result-part-4.html)
