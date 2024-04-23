@@ -2,7 +2,7 @@
 title: Working With Rust Result - What is a Result? - Part 1
 author: sanjiv sahayam
 description: Working with rust result - What is a Result?
-tags: Rust
+tags: rust
 comments: true
 ---
 

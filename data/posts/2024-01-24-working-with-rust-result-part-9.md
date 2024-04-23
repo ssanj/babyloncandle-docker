@@ -2,7 +2,7 @@
 title: Working With Rust Result - Combining Results Some More - Part 9
 author: sanjiv sahayam
 description: Working with Rust Result - Combining Results some more
-tags: Rust
+tags: rust
 comments: true
 ---
 
@@ -37,6 +37,8 @@ In summary:
 Ok(_:T)  -> res:Result<U, E> -> Result<U, E>  // `Ok` value type changes from `T` from `U`
 Err(e:E) -> Err(e)           -> Result<U, E>  // Notice that the `Err` value type is fixed at: `E`
 ```
+
+<img src="/images/2024-01-24-working-with-rust-result/and-2.png" width="600" />
 
 This can be useful when you only want to know if something succeeded or failed instead of needing to work on its value.
 
@@ -105,7 +107,7 @@ Ok(t:T)  -> Ok(t)             -> Result<T, F> // `Ok` value type is fixed: `T`
 
 It's important to note that `res` dictates the final `Err` type returned from `or` and that the type inside the `Ok` constructor doesn't change. We'll see that come into play in the example below.
 
-<img src="/images/2024-01-24-working-with-rust-result/or.png" width="600" />
+<img src="/images/2024-01-24-working-with-rust-result/or-2.png" width="600" />
 
 Here's an example of where we can try one of several parse functions until we find one that succeeds.
 

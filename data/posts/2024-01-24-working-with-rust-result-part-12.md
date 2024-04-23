@@ -2,7 +2,7 @@
 title: Working With Rust Result - Value Tests - Part 12
 author: sanjiv sahayam
 description: Working with Rust Result - Value tests
-tags: Rust
+tags: rust
 comments: true
 ---
 

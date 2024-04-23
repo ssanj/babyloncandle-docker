@@ -2,7 +2,7 @@
 title: Working With Rust Result
 author: sanjiv sahayam
 description: Working with Rust Result
-tags: Rust
+tags: rust
 ---
 
 Trying to learning how to use the Rust [Result](https://doc.rust-lang.org/std/result/enum.Result.html) type can be daunting. In this "Working with Rust Result" series of short posts, I hope to make that more approachable. This series is for beginners who are finding difficult to understand what a `Result` is and how to use it.

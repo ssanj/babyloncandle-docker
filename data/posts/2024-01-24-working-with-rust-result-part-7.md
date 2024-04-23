@@ -2,7 +2,7 @@
 title: Working With Rust Result - Chaining with Map - Part 7
 author: sanjiv sahayam
 description: Working with Rust Result - Chaining with Map
-tags: Rust
+tags: rust
 comments: true
 ---
 

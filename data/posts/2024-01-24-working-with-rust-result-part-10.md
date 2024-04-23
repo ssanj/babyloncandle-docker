@@ -2,7 +2,7 @@
 title: Working With Rust Result - Working with Errors - Part 10
 author: sanjiv sahayam
 description: Working with Rust Result - Working with errors
-tags: Rust
+tags: rust
 comments: true
 ---
 

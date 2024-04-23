@@ -2,7 +2,7 @@
 title: Working With Rust Result - Conversion to Option - Part 11
 author: sanjiv sahayam
 description: Working with Rust Result - Converion to Option
-tags: Rust
+tags: rust
 comments: true
 ---
 

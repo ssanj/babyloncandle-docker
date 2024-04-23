@@ -2,7 +2,7 @@
 title: Working With Rust Result - Asides - Part 13
 author: sanjiv sahayam
 description: Working with Rust Result - Asides
-tags: Rust
+tags: rust
 comments: true
 ---
 

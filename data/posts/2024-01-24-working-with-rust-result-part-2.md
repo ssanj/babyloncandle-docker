@@ -2,7 +2,7 @@
 title: Working With Rust Result - Extracting Values - Part 2
 author: sanjiv sahayam
 description: Working with Rust Result - How to extract values
-tags: Rust
+tags: rust
 comments: true
 ---
 

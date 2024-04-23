@@ -2,7 +2,7 @@
 title: Working With Rust Result - Making Things Safer with Fallbacks - Part 4
 author: sanjiv sahayam
 description: Working with Rust Result - Extracting values more safely with fallbacks
-tags: Rust
+tags: rust
 comments: true
 ---
 

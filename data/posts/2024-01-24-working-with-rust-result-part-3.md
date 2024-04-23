@@ -2,7 +2,7 @@
 title: Working With Rust Result - Extracting Values Unsafely - Part 3
 author: sanjiv sahayam
 description: Working with Rust Result - Extracting values unsafely
-tags: Rust
+tags: rust
 comments: true
 ---
 
