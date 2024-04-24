@@ -34,7 +34,7 @@ Ok(t:T) -> Some(t) // Option<T>
 Err(_)  -> None    // Option<T>
 ```
 
-<img src="/images/2024-01-24-working-with-rust-result/ok.png" width="600" />
+<img src="/images/2024-01-24-working-with-rust-result/ok-2.png" width="600" />
 
 
 For example, to only get a list of valid numbers from a list strings, we could use [filter_map](https://doc.rust-lang.org/std/iter/trait.Iterator.html#method.filter_map). `filter_map` filters and maps at the same time, only returning values that are wrapped in a `Some`  constructor:
@@ -126,7 +126,7 @@ Ok(None)       -> None           // Option<Result<T, E>>
 Err(e:E)       -> Some(Err(e))   // Option<Result<T, E>>
 ```
 
-<img src="/images/2024-01-24-working-with-rust-result/transpose.png" width="600" />
+<img src="/images/2024-01-24-working-with-rust-result/transpose-2.png" width="600" />
 
 We are basically flipping the containers; going from `Result<Option<T>, E>` to a `Option<Result<T, E>>`.
 

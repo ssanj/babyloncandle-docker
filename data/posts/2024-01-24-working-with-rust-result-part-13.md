@@ -51,7 +51,7 @@ With a type alias like above, we don't have to constantly specify a type for a `
 
 There's a distinction that applies to all `_or` and `_or_else` variants for `Result` methods. Let's take `unwrap_or` and `unwrap_or_else` as an example. As a refresher, here are the definitions for both functions.
 
-`unwrap`:
+`unwrap_or`:
 
 ```{.rust .scrollx}
 pub fn unwrap_or(self, default: T) -> T {
@@ -90,6 +90,6 @@ You can think of `unwrap_or` as being "strict" or "eager" in its evaluation of t
 
 <p/>
 
-In general prefer the `or_else` version of a function if you don't want your code running until there is an `Err`. The `_or` variant is fine if your `default` value is a constant or has been already evaluated.
+In general prefer the `or_else` version of a method if you don't want your code running until there is a reason for it to. The `_or` variant is fine if your `default` value is a constant or has been already evaluated.
 
-Continue on to [Summary](2024-01-24-working-with-rust-result-part-14.html)
+Complete the series at the [Summary](2024-01-24-working-with-rust-result-part-14.html)

@@ -40,7 +40,7 @@ return an error or extract a success value. You can think of it as an `unwrap` o
 
 <img src="/images/2024-01-24-working-with-rust-result/question-mark-operator-3.png" width="600" />
 
-Here's another the definition of `and_numbers` which uses the `?` operator:
+Here's the definition of `and_numbers_2` which uses the `?` operator:
 
 ```{.rust .scrollx}
 fn add_numbers_2(one: &str, two: &str, three: &str) -> Result<u32, ParseIntError> {
@@ -120,6 +120,6 @@ impl From<MyError> for ParseIntError {
 }
 ```
 
-With the above conversion in place `add_numbers_3` compiles with out any errors, indicating that `MyError` was implicitly converted to `ParseIntError` and aligning our `Err` values for "free". The question mark operator makes working with `Result` so much easier.
+With the above conversion in place `add_numbers_3` compiles with out any errors, indicating that `MyError` was implicitly converted to `ParseIntError` and aligning our `Err` values almost for "free". The question mark operator makes working with `Result` so much easier.
 
 Continue on to [Combining Results Some More](2024-01-24-working-with-rust-result-part-9.html)

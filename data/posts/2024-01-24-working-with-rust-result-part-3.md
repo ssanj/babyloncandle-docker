@@ -49,7 +49,7 @@ fn unwrap_failed(msg: &str, error: &dyn fmt::Debug) -> ! {
 }
 ```
 
-On an `Err` the `unwrap_failed` function is called, which `panic`s. This explains how we can always return an value of type `T` even when we don't have one.
+On an `Err`, the `unwrap_failed` function is called, which `panic`s. Since `panic` doesn't have a type, the [never](https://doc.rust-lang.org/std/primitive.never.html) type:`!`, coerces the result of `unwrap_failed` to match type `T`. This explains how we can always return an value of type `T` even when we don't have one.
 
 <img src="/images/2024-01-24-working-with-rust-result/unwrap.png" width="600" />
 
@@ -104,7 +104,7 @@ Ooops! Looks like you're not twenty five
 
 Panic-ing your program is probably the last thing you want to do; It's something you do when you have no other options. As such it's highly discouraged. We should only panic when we have no other ways of recovering from the error.
 
-But how do you do that? We've already seen some ways to do that with pattern matching, `map_or_else` and `map_or`. There are other ways which we will look at next.
+But how do you do that? We've already seen some ways to do that with pattern matching, `map_or_else` and `map_or`. We will look at safer ways to  unwrap a `Result` next.
 
 
 Continue on to [Making Things Safer with Fallbacks](2024-01-24-working-with-rust-result-part-4.html)

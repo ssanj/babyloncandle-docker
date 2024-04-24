@@ -31,14 +31,20 @@ pub fn unwrap_or(self, default: T) -> T {
 }
 ```
 
-In the above definition we supply a `default` value of type `T`. This default value will be used when there is an `Err`, the `Ok` value will be returned otherwise. This is very similar to `map_or` but where we don't run a function on the success value:
+In summary:
 
 ```{.rust .scrollx}
 // pseudocode
+// Given: Result<T, E>
+// Return type: T
 
-Ok(t)   ->  t       // Return value in Ok
-Err(e)  ->  default // Return default if in error
+default: -> T
+
+Ok(t)   ->  t       -> T // Return value in Ok
+Err(e)  ->  default -> T // Return default if in error
 ```
+
+In the above definition we supply a `default` value of type `T`. This default value will be used when there is an `Err`, the `Ok` value will be returned otherwise. This is very similar to `map_or` but where we don't run a function on the success value.
 
 <img src="/images/2024-01-24-working-with-rust-result/unwrap-or.png" width="600" />
 
@@ -62,8 +68,14 @@ pub fn unwrap_or_else<F: FnOnce(E) -> T>(self, op: F) -> T {
 }
 ```
 
+In summary:
+
 ```{.rust .scrollx}
 // pseudocode
+// Given: Result<T, E>
+// Return type: T
+
+op: E -> T
 
 Ok(t)   ->  t     -> T // Return value in Ok
 Err(e)  ->  op(e) -> T // Convert the value in Err to a `T`
@@ -89,7 +101,23 @@ where
 }
 ```
 
-In the above definition, if a `Result` is an `Err` then the default instance of type `T` is used. The type `T` has a constraint on it that requires that it has an instance of the [Default](https://doc.rust-lang.org/std/default/trait.Default.html) trait: `T: Default`. Here's an example of how to use it:
+
+In the above definition, if a `Result` is an `Err` then the default instance of type `T` is used. The type `T` has a constraint on it that requires that it has an instance of the [Default](https://doc.rust-lang.org/std/default/trait.Default.html) trait: `T: Default`.
+
+In summary:
+
+```{.rust .scrollx}
+// pseudocode
+// Given: Result<T, E>
+// Return type: T
+
+T: Default     -> T
+
+Ok(t)   ->  t  -> T // Return value in Ok
+Err(_)         -> T // Return Default instance for T
+```
+
+Here's an example of how to use it:
 
 ```{.rust .scrollx}
 let result_ok: Result<u32, String> = Ok(1);
@@ -99,13 +127,7 @@ result_ok.unwrap_or_default();  // 1
 result_err.unwrap_or_default(); // 0
 ```
 
-This is also very similar to `unwrap_or` where, we supply a default value for the error case. In `unwrap_or_default` the default value is derived from the `Default` instance for type `T`:
+This is also very similar to `unwrap_or` where, we supply a default value for the error case. With `unwrap_or_default` the default value is derived from the `Default` instance for type `T`.
 
-```{.rust .scrollx}
-// pseudocode
-
-Ok(t)   ->  t  -> T // Return value in Ok
-Err(_)         -> T // Return Default instance for T
-```
 
 Continue on to [Transforming Values](2024-01-24-working-with-rust-result-part-5.html)

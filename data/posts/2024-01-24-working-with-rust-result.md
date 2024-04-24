@@ -5,7 +5,7 @@ description: Working with Rust Result
 tags: rust
 ---
 
-Trying to learning how to use the Rust [Result](https://doc.rust-lang.org/std/result/enum.Result.html) type can be daunting. In this "Working with Rust Result" series of short posts, I hope to make that more approachable. This series is for beginners who are finding difficult to understand what a `Result` is and how to use it.
+Trying to learning how to use the Rust [Result](https://doc.rust-lang.org/std/result/enum.Result.html) type can be daunting. In this "Working with Rust Result" series of short posts, I hope to make that more approachable. This series is for beginners who are finding it difficult to understand what a `Result` is and how to use it.
 
 The series is split into fourteen parts as listed below.
 
@@ -28,7 +28,9 @@ Now I know what you're thinking:
 
 > Fourteen posts? You've got to be kidding me!
 
-I know it's a lot of posts. I've tried to make them as small as possible with examples and some diagrams to make it more palatable. Also don't feel the need to read the full series at one go. Read as much as you want or choose topic you want to know more about or are currently struggling with and start there.
+I know it's a lot of posts. I've tried to make each as small as possible with a single focus. I've added examples and some diagrams to make it more palatable.
+
+Also don't feel the need to read the full series at one go. Read as much as you want or choose a topic you want to know more about or are currently struggling with and start there. Be sure to try some of the examples out and experiment with your own changes; That's the best way to learn.
 
 
 Jump in at [What is a Result?](2024-01-24-working-with-rust-result-part-1.html)

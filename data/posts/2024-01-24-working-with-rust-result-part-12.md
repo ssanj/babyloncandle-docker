@@ -18,7 +18,7 @@ pub const fn is_ok(&self) -> bool {
 }
 ```
 
-[matches!](https://doc.rust-lang.org/std/macro.matches.html) is a macro that tests if a value matches a given pattern, returning a bool value to indicate success or failure.
+The [matches!](https://doc.rust-lang.org/std/macro.matches.html) macro tests if a value matches a given pattern, returning a bool value to indicate success or failure.
 
 In summary:
 
@@ -174,4 +174,4 @@ A simple example is to testing whether a number is an invalid digit:
 ```
 
 
-You're almost at the end! Continue on to the [Asides](2024-01-24-working-with-rust-result-part-13.html)
+You're almost at the end! Continue onto the [Asides](2024-01-24-working-with-rust-result-part-13.html)

@@ -15,8 +15,6 @@ enum Result<T, E> {
 }
 ```
 
-<img src="/images/2024-01-24-working-with-rust-result/rust-result-type-2.png" width="600" />
-
 You can think of `Ok` and `Err` as just wrappers around the actual values. That way if you see an `Ok` instance you know it has a success value wrapped "inside" it. Similarly when you get an `Err` instance, you know that it has an error value wrapped "inside" it. If you find this confusing, you can think of the `Ok` and `Err` constructors as "markers" indicating what the value they have is: either a success or error, respectively.
 
 The first type variable `T`, represents the success **type** while, the second type `E`, represents the error **type**:
@@ -29,6 +27,10 @@ enum Result<T, E> {
    Err(E), // Oh noes
 }
 ```
+
+Because `Result` is an `enum` any value of type `Result` can only be one of `Ok` or `Err`; Never both.
+
+<img src="/images/2024-01-24-working-with-rust-result/rust-result-type-2.png" width="600" />
 
 > Note: The code examples from Rust std are from version `1.77.0`.
 

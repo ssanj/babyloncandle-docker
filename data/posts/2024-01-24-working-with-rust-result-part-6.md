@@ -7,7 +7,7 @@ comments: true
 ---
 
 
-`Result` gets interesting when you need to combine multiple of them to give you one final `Result`.
+`Result` gets interesting when you need to combine multiples to give you one final `Result`.
 
 ## and_then
 
@@ -22,7 +22,7 @@ pub fn and_then<U, F: FnOnce(T) -> Result<U, E>>(self, op: F) -> Result<U, E> {
 }
 ```
 
-From the above definition, the function `op` is run on the success value within an `Ok` instance. This is very similar to `map`, with the main difference being that the function `op` returns another `Result` instead of another type. It's important to note that since `op` returns a `Result` we can choose whether to return an `Ok` or `Err` instance at this point. `and_then` gives us power to make a decision.
+From the above definition, the function `op` is run on the success value within an `Ok` instance. This is very similar to `map`, with the main difference being that the function `op` returns another `Result` instead of another type. It's important to note that since `op` returns a `Result` we can choose whether to return an `Ok` or `Err` instance at this point. `and_then` gives us the power to make a decision.
 
 > Unlike `map` there is no wrapping of the result in an `Ok` constructor as `op` already returns a `Result`.
 
@@ -33,7 +33,7 @@ From the above definition, the function `op` is run on the success value within 
 
 op: T -> Result<U, E> // Converts a success value into another Result (Ok or Err)
 
-Ok(t:T)   ->  op(t)  -> Ok(U) or Err(E) // Return converted value in Ok as a Result<U, E>
+Ok(t:T)   ->  op(t)  -> Ok(U) or Err(E) // Return converted value in Ok or Err as a Result<U, E>
 Err(e:E)             -> Err(e)          // Return existing error as Result<U, E>
 ```
 <img src="/images/2024-01-24-working-with-rust-result/and-then.png" width="600" />
@@ -52,7 +52,7 @@ fn parse_number(value: &str) -> Result<u32, ParseIntError> {
 Let's try and parse a string number with `parse_number` and multiply its value by 2:
 
 ```{.rust .scrollx}
-parse_number("10")
+parse_number("10") // Result<u32, ParseIntError>
     .and_then(|value| {
         // We have successfully parsed "10" into 10.
         let new_result = ten * 2; // Multiply by 2
@@ -63,13 +63,16 @@ parse_number("10")
 Given that we have to use a function that also returns a `Result` from `and_then` we can wrap `new_result` in the `Ok` constructor:
 
 ```{.rust .scrollx}
-parse_number("10")
+parse_number("10") // Result<u32, ParseIntError>
     .and_then(|ten| {
         // We have successfully parsed "10" into 10.
         let new_result = ten * 2 // Multiply by 2
         Ok(new_result) // Result<u32, ParseIntError>
     })
 ```
+
+
+### Aligning errors types
 
 If we want to fail our calculation for some reason we can return an `Err`:
 
