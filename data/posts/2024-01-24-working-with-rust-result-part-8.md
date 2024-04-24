@@ -122,4 +122,5 @@ impl From<MyError> for ParseIntError {
 
 With the above conversion in place `add_numbers_3` compiles with out any errors, indicating that `MyError` was implicitly converted to `ParseIntError` and aligning our `Err` values almost for "free". The question mark operator makes working with `Result` so much easier.
 
-Continue on to [Combining Results Some More](2024-01-24-working-with-rust-result-part-9.html)
+- Continue on to [Combining Results Some More](2024-01-24-working-with-rust-result-part-9.html)
+- Back to [TOC](2024-01-24-working-with-rust-result.html)

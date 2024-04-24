@@ -20,6 +20,8 @@ parse_number("10")
   })
 ```
 
+<img src="/images/2024-01-24-working-with-rust-result/and-then-chaining.png" width="600" />
+
 We could also just `map` over the last function that returns a `Result`:
 
 ```{.rust .scrollx}
@@ -60,6 +62,8 @@ Ok(t:T)   ->  op(t) -> U -> Ok(U)  // Return converted value in Ok, as a Result<
 Err(e:E)                 -> Err(e) // Return existing error as Result<U, E>
 ```
 
+<img src="/images/2024-01-24-working-with-rust-result/and-then-with-map-2.png" width="600" />
+
 How do we decide when to use `and_then` at the last step of a `Result` chain or whether to use `map`?
 
 > If you need to make a decision about whether to fail or not, then use `and_then` because you
@@ -69,4 +73,5 @@ can return an `Ok` to succeed or an `Err` to fail. If you simply want to work on
 
 So many rules to keep in mind! If only there were an easier way to combine `Result`s.
 
-Continue on to [Combining Results the Question Mark Operator](2024-01-24-working-with-rust-result-part-8.html)
+- Continue on to [Combining Results the Question Mark Operator](2024-01-24-working-with-rust-result-part-8.html)
+- Back to [TOC](2024-01-24-working-with-rust-result.html)

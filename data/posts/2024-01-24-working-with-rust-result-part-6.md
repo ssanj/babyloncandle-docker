@@ -71,7 +71,6 @@ parse_number("10") // Result<u32, ParseIntError>
     })
 ```
 
-
 ### Aligning errors types
 
 If we want to fail our calculation for some reason we can return an `Err`:
@@ -146,6 +145,8 @@ parse_number("10")
 })
 ```
 
-Continue on to [Chaining with Map](2024-01-24-working-with-rust-result-part-7.html)
+<img src="/images/2024-01-24-working-with-rust-result/aligning-errors.png" width="600" />
 
+- Continue on to [Chaining with Map](2024-01-24-working-with-rust-result-part-7.html)
+- Back to [TOC](2024-01-24-working-with-rust-result.html)
 

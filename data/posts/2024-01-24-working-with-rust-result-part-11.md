@@ -163,4 +163,5 @@ maybe_numbers_2
   .collect::<Vec<_>>() // [Ok(2), Err(ParseIntError { kind: InvalidDigit }), Ok(4), Ok(6), Err(ParseIntError { kind: InvalidDigit })]
 ```
 
-Continue on to [Value Tests](2024-01-24-working-with-rust-result-part-12.html)
+- Continue on to [Value Tests](2024-01-24-working-with-rust-result-part-12.html)
+- Back to [TOC](2024-01-24-working-with-rust-result.html)

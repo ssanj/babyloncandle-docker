@@ -130,4 +130,5 @@ result_err.unwrap_or_default(); // 0
 This is also very similar to `unwrap_or` where, we supply a default value for the error case. With `unwrap_or_default` the default value is derived from the `Default` instance for type `T`.
 
 
-Continue on to [Transforming Values](2024-01-24-working-with-rust-result-part-5.html)
+- Continue on to [Transforming Values](2024-01-24-working-with-rust-result-part-5.html)
+- Back to [TOC](2024-01-24-working-with-rust-result.html)

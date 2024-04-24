@@ -78,4 +78,5 @@ We have used the debug syntax (`{:?}`) to display the value of the `Result` in t
 
 What if we want to actually get the success or error value "out" of a `Result` instead of just printing it? Let's look at how we can shed the `Result` wrappers and get at the values inside.
 
-Continue to [Extracting Values](2024-01-24-working-with-rust-result-part-2.html)
+- Continue to [Extracting Values](2024-01-24-working-with-rust-result-part-2.html)
+- Back to [TOC](2024-01-24-working-with-rust-result.html)

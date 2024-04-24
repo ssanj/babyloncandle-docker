@@ -178,4 +178,6 @@ It helps to try and learn to use them one at a time; as and when needed. The fol
   </tbody>
 </table>
 
-I hope this somewhat lengthy series helped you learn some more about Rust's `Result` type. If you found any errors or omissions or found this useful, please drop me a comment.
+I hope this somewhat lengthy series helped you learn some more about Rust's `Result` type. If you found any errors or omissions or found this useful, please leave a comment.
+
+- Back to [TOC](2024-01-24-working-with-rust-result.html)

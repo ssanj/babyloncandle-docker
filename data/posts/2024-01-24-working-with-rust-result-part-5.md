@@ -53,4 +53,5 @@ In either case the `Result`is converted from a `Result<T, E>` to a `Result<U, E>
 You can also think of the `map` function as of type: `Result<T -> U, E>`; as in it runs a function on the success side of `Result` leaving the error side untouched.
 
 
-Continue on to [Combining Results](2024-01-24-working-with-rust-result-part-6.html)
+- Continue on to [Combining Results](2024-01-24-working-with-rust-result-part-6.html)
+- Back to [TOC](2024-01-24-working-with-rust-result.html)

@@ -174,4 +174,7 @@ A simple example is to testing whether a number is an invalid digit:
 ```
 
 
-You're almost at the end! Continue onto the [Asides](2024-01-24-working-with-rust-result-part-13.html)
+You're almost at the end!
+
+- Continue onto the [Asides](2024-01-24-working-with-rust-result-part-13.html)
+- Back to [TOC](2024-01-24-working-with-rust-result.html)

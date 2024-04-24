@@ -110,4 +110,5 @@ println!("{result1}"); // You have failed :(
 println!("{result2}"); // Here's your certificate, for a magnificent grade of: 75
 ```
 
-Continue on to [Extracting Values Unsafely](2024-01-24-working-with-rust-result-part-3.html)
+- Continue on to [Extracting Values Unsafely](2024-01-24-working-with-rust-result-part-3.html)
+- Back to [TOC](2024-01-24-working-with-rust-result.html)

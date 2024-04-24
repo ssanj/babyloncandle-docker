@@ -138,4 +138,5 @@ When used on an error:
 parse_bool("ten").expect_err("This should not be bool") // ParseBoolError
 ```
 
-Continue on to [Conversion to Option](2024-01-24-working-with-rust-result-part-11.html)
+- Continue on to [Conversion to Option](2024-01-24-working-with-rust-result-part-11.html)
+- Back to [TOC](2024-01-24-working-with-rust-result.html)

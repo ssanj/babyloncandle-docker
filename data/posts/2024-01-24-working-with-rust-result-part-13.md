@@ -92,4 +92,5 @@ You can think of `unwrap_or` as being "strict" or "eager" in its evaluation of t
 
 In general prefer the `or_else` version of a method if you don't want your code running until there is a reason for it to. The `_or` variant is fine if your `default` value is a constant or has been already evaluated.
 
-Complete the series at the [Summary](2024-01-24-working-with-rust-result-part-14.html)
+- Complete the series at the [Summary](2024-01-24-working-with-rust-result-part-14.html)
+- Back to [TOC](2024-01-24-working-with-rust-result.html)
