@@ -31,11 +31,11 @@ It helps to try and learn to use them one at a time; as and when needed. The fol
           <li>`Patten matching`</li>
           <li>`map_or_else`</li>
           <li>`map_or`</li>
-          <li>`unwrap` unsafe</li>
+          <li>`unwrap` panics</li>
           <li>`unwrap_or`</li>
           <li>`unwrap_or_else`</li>
           <li>`unwrap_or_default`</li>
-          <li>`expect` unsafe</li>
+          <li>`expect` panics</li>
         </ul>
       </td>
     </tr>
@@ -61,8 +61,8 @@ It helps to try and learn to use them one at a time; as and when needed. The fol
       <td align="center">Get the value inside `Ok`</td>
       <td align="left">
         <ul>
-          <li>`unwrap` unsafe</li>
-          <li>`expect` unsafe</li>
+          <li>`unwrap` panics</li>
+          <li>`expect` panics</li>
           <li>`? operator`</li>
         </ul>
       </td>
@@ -83,8 +83,8 @@ It helps to try and learn to use them one at a time; as and when needed. The fol
       <td align="center">Get the value inside `Err`</td>
       <td align="left">
         <ul>
-          <li>`unwrap_err` unsafe</li>
-          <li>`expect_err` unsafe</li>
+          <li>`unwrap_err` panics</li>
+          <li>`expect_err` panics</li>
         </ul>
       </td>
     </tr>

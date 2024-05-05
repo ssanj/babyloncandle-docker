@@ -11,8 +11,8 @@ The series is split into fourteen parts as listed below.
 
 1. [What is a Result?](2024-01-24-working-with-rust-result-part-1.html)
 1. [Extracting Values](2024-01-24-working-with-rust-result-part-2.html)
-1. [Extracting Values Unsafely](2024-01-24-working-with-rust-result-part-3.html)
-1. [Making Things Safer with Fallbacks](2024-01-24-working-with-rust-result-part-4.html)
+1. [Extracting Values That Can Panic](2024-01-24-working-with-rust-result-part-3.html)
+1. [Making Things Nicer with Fallbacks](2024-01-24-working-with-rust-result-part-4.html)
 1. [Transforming Values](2024-01-24-working-with-rust-result-part-5.html)
 1. [Combining Results](2024-01-24-working-with-rust-result-part-6.html)
 1. [Chaining with Map](2024-01-24-working-with-rust-result-part-7.html)

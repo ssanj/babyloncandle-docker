@@ -52,7 +52,7 @@ when using functions like `and_then`.
 
 ### unwrap_err
 
-`unwrap_err` gives you access to the error inside an `Err` instance and <u>panic</u>s on an `Ok` instance. This is an unsafe function
+`unwrap_err` gives you access to the error inside an `Err` instance and <u>panic</u>s on an `Ok` instance. This is a function that can panic
 and should be used only when you know for certain that you have an `Err` or don't care (like maybe in a test, where you want the test to fail).
 
 ```{.rust .scrollx}

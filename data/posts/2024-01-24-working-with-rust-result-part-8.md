@@ -115,7 +115,7 @@ We can't directly create a `ParseIntError` as the constructor is private. We can
 ```{.rust .scrollx}
 impl From<MyError> for ParseIntError {
   fn from(source: MyError) -> Self {
-      parse_number(&source.0).unwrap_err() // Being unsafe again
+      parse_number(&source.0).unwrap_err() // Forcing values again
   }
 }
 ```

@@ -1,19 +1,19 @@
 ---
-title: Working With Rust Result - Extracting Values Unsafely - Part 3
+title: Working With Rust Result - Extracting Values That Can Panic - Part 3
 author: sanjiv sahayam
-description: Working with Rust Result - Extracting values unsafely
+description: Working with Rust Result - Extracting values that can panic
 tags: rust
 comments: true
 ---
 
-> Note: Do not use these functions if you have better/safer alternatives.
+> Note: Do not use these functions if you have better/nicer alternatives.
 
 
 ### unwrap
 
 What if we want to fail (panic) our program if the supplied age is not twenty five?
 
-We can work unsafely by using `unwrap`. `unwrap` is defined as:
+We can work forcibly by using `unwrap`. `unwrap` is defined as:
 
 ```{.rust .scrollx}
 pub fn unwrap(self) -> T
@@ -104,8 +104,8 @@ Ooops! Looks like you're not twenty five
 
 Panic-ing your program is probably the last thing you want to do; It's something you do when you have no other options. As such it's highly discouraged. We should only panic when we have no other ways of recovering from the error.
 
-But how do you do that? We've already seen some ways to do that with pattern matching, `map_or_else` and `map_or`. We will look at safer ways to  unwrap a `Result` next.
+But how do you do that? We've already seen some ways to do that with pattern matching, `map_or_else` and `map_or`. We will look at nicer ways to unwrap a `Result` next.
 
 
-- Continue on to [Making Things Safer with Fallbacks](2024-01-24-working-with-rust-result-part-4.html)
+- Continue on to [Making Things Nicer with Fallbacks](2024-01-24-working-with-rust-result-part-4.html)
 - Back to [TOC](2024-01-24-working-with-rust-result.html)

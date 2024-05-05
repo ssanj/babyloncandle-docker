@@ -1,13 +1,13 @@
 ---
-title: Working With Rust Result - Making Things Safer with Fallbacks - Part 4
+title: Working With Rust Result - Making Things Nicer with Fallbacks - Part 4
 author: sanjiv sahayam
-description: Working with Rust Result - Extracting values more safely with fallbacks
+description: Working with Rust Result - Making things nicer with fallbacks
 tags: rust
 comments: true
 ---
 
 
-We can `unwrap` a `Result` safely, if we provide a default value of type `T` or call a function that returns a value of type `T` when given a type `E`:
+We can `unwrap` a `Result` in a nicer way, if we provide a default value of type `T` or call a function that returns a value of type `T` when given a type `E`:
 
 ```{.rust .scrollx}
 // pseudocode
