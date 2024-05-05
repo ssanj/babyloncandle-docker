@@ -180,4 +180,14 @@ It helps to try and learn to use them one at a time; as and when needed. The fol
 
 I hope this somewhat lengthy series helped you learn some more about Rust's `Result` type. If you found any errors or omissions or found this useful, please leave a comment.
 
+## Feedback from the review lounge
+
+### SirKastic23
+
+A huge thanks to `SirKastic23` for giving me some sound feedback on Reddit:
+
+<blockquote class="reddit-embed-bq" data-embed-showtitle="true" data-embed-theme="dark" data-embed-height="386"><a href="https://www.reddit.com/r/rust/comments/1ckbn6f/comment/l2n8wtf/">Comment</a><br> by<a href="https://www.reddit.com/user/ssanjs/">u/ssanjs</a> from discussion<a href="https://www.reddit.com/r/rust/comments/1ckbn6f/working_with_rust_result/"><no value=""></no></a><br> in<a href="https://www.reddit.com/r/rust/">rust</a></blockquote><script async="" src="https://embed.reddit.com/widgets.js" charset="UTF-8"></script>
+
+I've made the updates to the sections marked "unsafe". I'll get to dark mode in the near future.
+
 - Back to [TOC](2024-01-24-working-with-rust-result.html)
