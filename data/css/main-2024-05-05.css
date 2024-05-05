@@ -13,7 +13,15 @@ body {
   font-size: 16px;
   line-height: 1.5;
   font-weight: 300;
-  background-color: #fdfdfd;
+  background-color: black;
+  color: white;
+}
+/*  background-color: #fdfdfd;*/
+}
+
+.dark {
+  background-color: black;
+  color: white;
 }
 
 h1, h2, h3, h4, h5, h6 { /*font-size: 100%; font-weight: 400;*/ }
@@ -22,9 +30,8 @@ h1 {
   font-size: 2em;
 }
 
-a         { color: #2a7ae2; text-decoration: none; }
-a:hover   { color: #000; text-decoration: underline; }
-a:visited { color: #205caa; }
+a         { color: #3d8099; font-weight:bold; }
+a:hover   { /*color: #000;*/ text-decoration: underline; }
 
 /* Utility */
 
@@ -32,7 +39,7 @@ a:visited { color: #205caa; }
 .wrap:after { content:""; display:table; }
 .wrap:after { clear: both; }
 .wrap {
-  max-width: 800px;
+  max-width: 1024px;
   padding: 0 30px;
   margin: 0 auto;
   zoom: 1;
@@ -58,7 +65,8 @@ th {
 }
 
 thead, th {
-  background-color: #e8e8e8;
+/*  background-color: #e8e8e8;*/
+  background-color: #a8a2a2;
 }
 
 tr:nth-child(odd){
@@ -85,7 +93,6 @@ figcaption {
   border-top: 5px solid #333;
   border-bottom: 1px solid #e8e8e8;
   min-height: 56px;
-  background-color: white;
   padding-bottom: 10px;
 }
 
@@ -93,7 +100,7 @@ figcaption {
 .site-title:hover,
 .site-title:visited {
   display: block;
-  color: #333;
+/*  color: #333;*/
   font-size: 26px;
   letter-spacing: -1px;
   float: left;
@@ -177,15 +184,31 @@ figcaption {
 /* Page Content styles */
 /* ----------------------------------------------------------*/
 
+.dark-style {
+  background-color: black;
+  color: white;
+}
+
+.light-style {
+  background-color: #fff;
+  color: black;
+}
+
 .page-content {
   padding: 30px 0;
-  background-color: #fff;
+/*  background-color: #fff;*/
 }
 
 .more-content {
   padding-top: 0;
   padding-bottom: 20px;
-  background-color: #fff;
+/*  background-color: #fff;*/
+}
+
+.more-content {
+  padding-top: 0;
+  padding-bottom: 20px;
+/*  background-color: #fff;*/
 }
 
 /* Home styles */
@@ -201,7 +224,7 @@ figcaption {
   font-size: 3em;
   line-height: 1.25;
   text-decoration: none;
-  color: black;
+/*  color: black;*/
   font-weight: 600;
 }
 
@@ -266,7 +289,7 @@ figcaption {
 
 .post-header h1 a, .post-header h1 a:hover, .post-header h1 a:visited {
   text-decoration: none;
-  color: black;
+/*  color: black;*/
 }
 
 .post-content {

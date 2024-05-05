@@ -228,7 +228,7 @@ This means we can't override it from a sub class. Boo!
 
 From our previous investigation we can see that all we need to do is override either `getLocalizedMessage` or `getMessage` or `toString` which are all **public**:
 
-```
+```{.java .scrollx}
 public String toString() {
     String s = getClass().getName();
     String message = getLocalizedMessage(); //message calculated from here

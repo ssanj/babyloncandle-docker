@@ -19,34 +19,51 @@ td.sourceCode {
 }
 
 .post code {
-  background-color: #f2f8ff;
   color: #000000a6;
+  background-color: #1a1919;
   border: none;
   font-size: 1em;
+  color: white;
+}
+
+p code {
+  background-color: #b55c3a !important;
 }
 
 .post pre.sourceCode, .post code.sourceCode {
-   background-color: hsl(0 0% 98% / 1);
+/*   background-color: hsl(0 0% 98% / 1);*/
+   background-color: #1a1919;
+   color: white;
    border: none;
 }
 
 .post code.sourceCode span.kw {
-  color: #cb50136e;
+  color: hsla(48, 85%, 74%, 1);
 }
 
 .post code.sourceCode span.ot, .post code.sourceCode span.fu {
 /*   color: #F9266B */
-  color: #9e8383;
+  color: #b18484;
 }
 
 .post code.sourceCode span.dt {
-  color: #4494a4;
+/*  color: #4494a4;*/
+  color: #328c9d;
 }
 
 .post code.sourceCode span.st {
-  color: #03501c9c;
+  color: hsla(162, 49%, 76%, 0.81);
 }
 
 .post code.sourceCode span.co {
-  color: #73715E
+  color: #73715E;
 }
+
+.post code.sourceCode span.cf {
+  color: hsla(201, 40%, 66%, 0.75);
+}
+
+.post code.sourceCode span.cn {
+  color: hsla(39, 82%, 77%, 0.78);
+}
+

@@ -32,7 +32,6 @@ html {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 18px;
   line-height: 1.2;
-  color: #333;
 }
 
 a {
@@ -100,7 +99,8 @@ p + p {
 }
 
 .typeahead {
-  background-color: #fff;
+  background-color: #262626;
+  color: white;
 }
 
 .typeahead:focus {
@@ -121,7 +121,7 @@ p + p {
   width: 396px;
   margin-top: 12px;
   padding: 8px 0;
-  background-color: #fff;
+  background-color: #262626;
   border: 1px solid #ccc;
   border: 1px solid rgba(0, 0, 0, 0.2);
   -webkit-border-radius: 8px;
@@ -139,7 +139,7 @@ p + p {
 
 .tt-suggestion.tt-cursor {
   color: #fff;
-  background-color: #0097cf;
+  background-color: white;
 
 }
 
