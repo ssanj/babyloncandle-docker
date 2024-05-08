@@ -37,6 +37,7 @@ In summary:
 // pseudocode
 // Given: Result<T, E>
 // Return type: T
+// default is eager
 
 default: -> T
 
@@ -45,6 +46,8 @@ Err(e)  ->  default -> T // Return default if in error
 ```
 
 In the above definition we supply a `default` value of type `T`. This default value will be used when there is an `Err`, the `Ok` value will be returned otherwise. This is very similar to `map_or` but where we don't run a function on the success value.
+
+Since `default` is [eager](2024-01-24-working-with-rust-result-part-13.html#eager-vs-laziness) it will get evaluated as soon as `unwrap_or` is called. Values for `default` should only be constants and precomputed values.
 
 <img src="/images/2024-01-24-working-with-rust-result/unwrap-or.png" width="600" />
 

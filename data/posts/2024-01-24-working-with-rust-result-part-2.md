@@ -91,6 +91,7 @@ In the above definition, a function `f` runs on the value inside the `Ok` instan
 
 ```{.rust .scrollx}
 // pseudocode
+// default is eager
 
 f      : T -> U // Convert success value to a U
 default:   -> U // Return a U if in error
@@ -98,16 +99,26 @@ default:   -> U // Return a U if in error
 
 Notice that we completely ignore the value inside of the `Err` instance.
 
+Since `default` is [eager](2024-01-24-working-with-rust-result-part-13.html#eager-vs-laziness) it will get evaluated as soon as `map_or` is called. Values for `default` should only be constants and precomputed values.
+
 <img src="/images/2024-01-24-working-with-rust-result/map-or.png" width="600" />
 
 `map_or` differs from `map_or_else`, in that it only takes a single function `f` and a default value to return in the `Err` case. This can be useful if you don't care about what the error case  and simple want to return some default value on error.
 
-```{.rust .scrollx}
-let result1 = pass_or_fail(45).map_or("You failed :(".to_owned(), |t| t);
-let result2 = pass_or_fail(75).map_or("You failed :(".to_owned(), |t| t);
+For example to calculate your bonus we might do something like:
 
-println!("{result1}"); // You have failed :(
-println!("{result2}"); // Here's your certificate, for a magnificent grade of: 75
+```{.rust .scrollx}
+fn get_bonus(status: &str) -> Result<f32, String> {
+  match status {
+    "VIP" => Ok(10000.0), // You're very important so you get 10K
+    "IP" => Ok(5000.0), // You're important so you get 5K
+    _ => Err("Who even are you?".to_owned()) // You're underachieving :(
+  }
+}
+
+get_bonus("VIP").map_or(0_f32, |t| t);   // 10000
+get_bonus("IP").map_or(0_f32, |t| t);    //  5000
+get_bonus("Rando").map_or(0_f32, |t| t); //     0
 ```
 
 - Continue on to [Extracting Values That Can Panic](2024-01-24-working-with-rust-result-part-3.html)
