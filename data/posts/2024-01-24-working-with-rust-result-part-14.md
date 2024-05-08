@@ -33,12 +33,12 @@ The following table summarises which method you would use under different circum
         <ul>
           <li>[`Patten matching`](2024-01-24-working-with-rust-result-part-2.html#pattern-matching)</li>
           <li>[`map_or_else`](2024-01-24-working-with-rust-result-part-2.html#map_or_else)</li>
-          <li>[`map_or`](2024-01-24-working-with-rust-result-part-2.html#map_or)</li>
-          <li>[`unwrap`](2024-01-24-working-with-rust-result-part-3.html#unwrap) panics</li>
-          <li>[`unwrap_or`](2024-01-24-working-with-rust-result-part-4.html#unwrap_or)</li>
+          <li>[`map_or`](2024-01-24-working-with-rust-result-part-2.html#map_or) <span class="warning">eager</span></li>
+          <li>[`unwrap`](2024-01-24-working-with-rust-result-part-3.html#unwrap) <span class="danger">panics</span></li>
+          <li>[`unwrap_or`](2024-01-24-working-with-rust-result-part-4.html#unwrap_or) <span class="warning">eager</span></li>
           <li>[`unwrap_or_else`](2024-01-24-working-with-rust-result-part-4.html#unwrap_or_else)</li>
           <li>[`unwrap_or_default`](2024-01-24-working-with-rust-result-part-4.html#unwrap_or_default)</li>
-          <li>[`expect`](2024-01-24-working-with-rust-result-part-3.html#expect) panics</li>
+          <li>[`expect`](2024-01-24-working-with-rust-result-part-3.html#expect) <span class="danger">panics</span></li>
         </ul>
       </td>
     </tr>
@@ -64,8 +64,8 @@ The following table summarises which method you would use under different circum
       <td align="center">Get the value inside `Ok`</td>
       <td align="left">
         <ul>
-          <li>[`unwrap`](2024-01-24-working-with-rust-result-part-3.html#unwrap) panics</li>
-          <li>[`expect`](2024-01-24-working-with-rust-result-part-3.html#expect) panics</li>
+          <li>[`unwrap`](2024-01-24-working-with-rust-result-part-3.html#unwrap) <span class="danger">panics</span></li>
+          <li>[`expect`](2024-01-24-working-with-rust-result-part-3.html#expect) <span class="danger">panics</span></li>
           <li>[`? operator`](2024-01-24-working-with-rust-result-part-8.html#the-question-mark-operator)</li>
         </ul>
       </td>
@@ -75,8 +75,8 @@ The following table summarises which method you would use under different circum
       <td align="left">
         <ul>
           <li>[`Patten matching`](2024-01-24-working-with-rust-result-part-2.html#pattern-matching)</li>
-          <li>[`map_or`](2024-01-24-working-with-rust-result-part-2.html#map_or)</li>
-          <li>[`unwrap_or`](2024-01-24-working-with-rust-result-part-4.html#unwrap_or)</li>
+          <li>[`map_or`](2024-01-24-working-with-rust-result-part-2.html#map_or) <span class="warning">eager</span></li>
+          <li>[`unwrap_or`](2024-01-24-working-with-rust-result-part-4.html#unwrap_or) <span class="warning">eager</span></li>
           <li>[`unwrap_or_else`](2024-01-24-working-with-rust-result-part-4.html#unwrap_or_else)</li>
           <li>[`unwrap_or_default`](2024-01-24-working-with-rust-result-part-4.html#unwrap_or_default)</li>
         </ul>
@@ -86,8 +86,8 @@ The following table summarises which method you would use under different circum
       <td align="center">Get the value inside `Err`</td>
       <td align="left">
         <ul>
-          <li>[`unwrap_err`](2024-01-24-working-with-rust-result-part-10.html#unwrap_err) panics</li>
-          <li>[`expect_err`](2024-01-24-working-with-rust-result-part-10.html#expect_err) panics</li>
+          <li>[`unwrap_err`](2024-01-24-working-with-rust-result-part-10.html#unwrap_err) <span class="danger">panics</span></li>
+          <li>[`expect_err`](2024-01-24-working-with-rust-result-part-10.html#expect_err) <span class="danger">panics</span></li>
         </ul>
       </td>
     </tr>
@@ -96,8 +96,8 @@ The following table summarises which method you would use under different circum
       <td align="left">
         <ul>
           <li>[`Patten matching`](2024-01-24-working-with-rust-result-part-2.html#pattern-matching)</li>
-          <li>[`map_or`](2024-01-24-working-with-rust-result-part-2.html#map_or)</li>
-          <li>[`unwrap_or`](2024-01-24-working-with-rust-result-part-4.html#unwrap_or)</li>
+          <li>[`map_or`](2024-01-24-working-with-rust-result-part-2.html#map_or) <span class="warning">eager</span></li>
+          <li>[`unwrap_or`](2024-01-24-working-with-rust-result-part-4.html#unwrap_or) <span class="warning">eager</span></li>
           <li>[`unwrap_or_else`](2024-01-24-working-with-rust-result-part-4.html#unwrap_or_else)</li>
           <li>[`unwrap_or_default`](2024-01-24-working-with-rust-result-part-4.html#unwrap_or_default)</li>
         </ul>
@@ -108,7 +108,7 @@ The following table summarises which method you would use under different circum
       <td align="left">
         <ul>
           <li>[`and_then`](2024-01-24-working-with-rust-result-part-6.html#and_then)</li>
-          <li>[`and`](2024-01-24-working-with-rust-result-part-9.html#and)</li>
+          <li>[`and`](2024-01-24-working-with-rust-result-part-9.html#and) <span class="warning">eager</span></li>
           <li>[`? operator`](2024-01-24-working-with-rust-result-part-8.html#the-question-mark-operator)</li>
         </ul>
       </td>
@@ -117,7 +117,7 @@ The following table summarises which method you would use under different circum
       <td align="center">Combine two `Result`s that are `Err`</td>
       <td align="left">
         <ul>
-          <li>[`or`](2024-01-24-working-with-rust-result-part-9.html#or)</li>
+          <li>[`or`](2024-01-24-working-with-rust-result-part-9.html#or) <span class="warning">eager</span></li>
           <li>[`or_else`](2024-01-24-working-with-rust-result-part-9.html#or_else)</li>
         </ul>
       </td>

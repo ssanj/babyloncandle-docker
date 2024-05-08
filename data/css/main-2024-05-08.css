@@ -475,6 +475,23 @@ div.haiku {
   text-align: center;
 }
 
+span.danger, span.warning {
+  color: #0d0d0d;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
+  padding: 1px 5px;
+  font-weight: bold;
+}
+
+span.danger {
+  background-color: #f37373;
+}
+
+span.warning {
+  background-color: #d79745;
+}
+
 
 /* media queries */
 /* ----------------------------------------------------------*/
