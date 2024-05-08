@@ -71,7 +71,7 @@ parse_number("10") // Result<u32, ParseIntError>
     })
 ```
 
-### Aligning errors types
+### Aligning error types
 
 If we want to fail our calculation for some reason we can return an `Err`:
 
