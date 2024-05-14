@@ -202,4 +202,10 @@ Another huge thanks to `tobikris` for pointing out an error with my usage of eag
 
 I've added clearer warnings regarding eagerness and have updated the affected examples.
 
+## someboddy
+
+Thanks to `someboddy` for suggesting linking to the individual sections. I've added a link to every method covered, in the TOC and in the summary page.
+
+<blockquote class="reddit-embed-bq" data-embed-showtitle="true" data-embed-theme="dark" data-embed-height="318"><a href="https://www.reddit.com/r/rust/comments/1ckbn6f/comment/l2orp7m/">Comment</a><br> by<a href="https://www.reddit.com/user/ssanjs/">u/ssanjs</a> from discussion<a href="https://www.reddit.com/r/rust/comments/1ckbn6f/working_with_rust_result/"><no value=""></no></a><br> in<a href="https://www.reddit.com/r/rust/">rust</a></blockquote><script async="" src="https://embed.reddit.com/widgets.js" charset="UTF-8"></script>
+
 - Back to [TOC](2024-01-24-working-with-rust-result.html)

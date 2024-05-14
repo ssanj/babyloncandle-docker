@@ -129,7 +129,7 @@ We can read the config file or return a default with:
 ```{.rust .scrollx}
 fn read_config(config_file: &str) -> Result<String, MyError> {
   use std::fs;
-  let default_config: String ="verbose=true".to_owned();
+  let default_config: String = "verbose=true".to_owned();
 
   fs::read_to_string(config_file) // Result<String, std::io::Error>
     .or(Ok(default_config)) // Result<String, MyError>
@@ -212,7 +212,6 @@ Here's one way we could do it:
 
 ```{.rust .scrollx}
 fn parse_my_result(value: &str) -> Result<MyResult, MyError> {
-  println!("value: {}", value);
   parse_number(value)
     .map(|n| MyResult::N(n))
     .or_else(|_|
@@ -221,11 +220,9 @@ fn parse_my_result(value: &str) -> Result<MyResult, MyError> {
     )
     .or_else(|_|
       if value.to_uppercase() == value {
-          println!("second or if");
           // We don't support full screaming caps
           Err(MyError(format!("We don't support screaming case: {}", value)))
        } else {
-        println!("second or else");
         Ok(MyResult::S(value.to_owned()))
        }
     )
