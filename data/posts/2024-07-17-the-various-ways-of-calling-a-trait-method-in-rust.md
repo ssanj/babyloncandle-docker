@@ -8,6 +8,58 @@ comments: true
 
 There are many ways to invoke trait methods in Rust. This can get confusing quickly as some only work in specific situations.
 
+
+## What is a trait method?
+
+As the name implies a "trait method" is method that is defined on a trait. Let's take the following trait that converts a type to it's lowercase equivalent as an example:
+
+```{.rust .scrollx}
+trait Lower {
+  fn lower(&self) -> Self;
+}
+```
+
+Using the above trait, we can convert from an implementing type to a lowercase version of itself.
+
+In summary:
+
+```{.rust .scrollx}
+implementation type: Self
+trait: `Lower`
+function: `lower`
+function parameter type: none supplied (only `&self`)
+```
+
+Given, simple wrapper type `Identifier` over a `String`:
+
+```{.rust .scrollx}
+struct Identifier(String);
+```
+
+And an implementation for the `Lower` trait for `Identifier`:
+
+impl Lower for Identifier {
+  fn lower(&self) -> Self {
+    Self(self.0.to_lowercase())
+  }
+}
+
+
+How do we go about invoking the functions on the `Lower` trait on an implementation?
+
+## The various ways
+
+Here are the standard ways of invoking a trait methods:
+
+1. Using an instance of the parameter type of the function on the trait
+1. Using the type that implements the trait
+1. Using the trait
+1. Using the fully qualified implementation path to the function
+
+
+
+## Another example
+
 ## What is a trait method?
 
 As the name implies a "trait method" is method that is defined on a trait. Taking `From` as an example:
@@ -26,9 +78,9 @@ In summary:
 
 ```{.rust .scrollx}
 implementation type: Self (depends on what you use)
-trait: `From<T>`
+trait: `From`
 function: from
-param: `T`
+function parameter type: `T` (`value` in the above example)
 ```
 
 ## The various ways
@@ -98,7 +150,7 @@ When we try the above we get a compilation error:
     = note: found the following associated functions; to be used as methods, functions must have a `self` parameter
 ```
 
-The compiler is reminding us that we can't use can't call `from` on an instance because the `from` function does not take a
+The compiler is reminding us that we can't call `from` on an `String` instance because the `from` function does not take a
 `self` parameter. The compiler also recommends that we use the "associated function syntax" to call the `from` function
 on the type directly. We'll look at how to do that in [Using the type that implements the trait](#using-the-type-that-implements-the-trait), for now let's see if can use an instance
 to do our conversion.
