@@ -6,7 +6,7 @@ tags: rust
 comments: true
 ---
 
-There are many ways to invoke trait methods in Rust. This can get confusing quickly as some only work in specific situations.
+There are many ways to invoke trait methods in Rust. This can get confusing quickly as there are quite a few ways of doing this.
 
 
 ## What is a trait method?
@@ -27,7 +27,7 @@ In summary:
 implementation type: Self
 trait: `Lower`
 function: `lower`
-function parameter type: none supplied (only `&self`)
+function parameter type: `&self`
 ```
 
 Given, simple wrapper type `Identifier` over a `String`:
@@ -38,12 +38,13 @@ struct Identifier(String);
 
 And an implementation for the `Lower` trait for `Identifier`:
 
+```{.rust .scrollx}
 impl Lower for Identifier {
   fn lower(&self) -> Self {
     Self(self.0.to_lowercase())
   }
 }
-
+```
 
 How do we go about invoking the functions on the `Lower` trait on an implementation?
 
@@ -57,12 +58,109 @@ Here are the standard ways of invoking a trait methods:
 1. Using the fully qualified implementation path to the function
 
 
+### Using an instance of the parameter type of the function on the trait
 
-## Another example
+The format of calling a function on a parameter instance is:
 
-## What is a trait method?
+```{.rust .scrollx}
+<parameter type instance>.function(param)
+```
 
-As the name implies a "trait method" is method that is defined on a trait. Taking `From` as an example:
+In our case:
+
+```{.rust .scrollx}
+parameter type: `Identifier`
+function: `lower`
+param: `&self`
+```
+
+Given an instance of an `Identifier`:
+
+```{.rust .scrollx}
+// Create an Identifier instance
+let id_string = String::from("012BCE5");
+let id = Identifier(id_string)
+```
+
+We can call the `lower` function on an instance of `Identifier` as follows:
+
+```{.rust .scrollx}
+let id1 = id.lower();
+```
+
+### Using the type that implements the trait
+
+The format of calling a function on a type is:
+
+```{.rust .scrollx}
+<implementation type>::function(param)
+```
+
+In our case:
+
+```{.rust .scrollx}
+implementation type: `Identifier`
+function: `lower`
+param: `&self`
+```
+
+Which gives us:
+
+```{.rust .scrollx}
+Identifier.lower(&id)
+```
+
+
+### Using the trait
+
+The format of calling a function on a trait is:
+
+```{.rust .scrollx}
+<Trait>::function(param)
+```
+
+In our case:
+
+```{.rust .scrollx}
+Trait: `Lower`
+function: `lower`
+param: `&self`
+```
+
+which gives us:
+
+```{.rust .scrollx}
+Lower::lower(&id)
+```
+
+### Using the fully qualified implementation path to the function
+
+The format of calling the fully qualified path to the function on a trait is:
+
+```{.rust .scrollx}
+<Implementation Type as Trait>::function(param)
+```
+
+In our case:
+
+```{.rust .scrollx}
+Implementation Type: Identifier
+Trait: `Lower`
+function: `lower`
+param: `&self`
+```
+
+which gives us:
+
+```{.rust .scrollx}
+<Identifier as Lower>::lower(&id)
+```
+
+
+## Using From
+
+
+Taking the `From` from `std` as an example:
 
 ```{.rust .scrollx}
 pub trait From<T>: Sized {
@@ -83,25 +181,7 @@ function: from
 function parameter type: `T` (`value` in the above example)
 ```
 
-## The various ways
-
-Here are the standard ways of invoking a trait methods:
-
-1. Using an instance of the parameter type of the function on the trait
-1. Using the type that implements the trait
-1. Using the trait
-1. Using the fully qualified implementation path to the function
-
-
-We'll look at each in turn, but let's first look at a basic example implementation we can work through in each of the sections.
-
-Given, simple wrapper type `Identifier` over a `String`:
-
-```{.rust .scrollx}
-struct Identifier(String);
-```
-
-And an implementation of the `From` trait for `Identifier`, that converts from a `String` to an `Identifier`:
+Let's implement the `From` trait for `Identifier`, so that it converts a `String` to an `Identifier`:
 
 ```{.rust .scrollx}
 impl From<String> for Identifier {
@@ -116,13 +196,25 @@ In summary:
 ```{.rust .scrollx}
 implementation type: `Identifier`
 trait: `From<T>`, where `T` is `String`
-function: from
+function: `from`
 param: `String`
 ```
 
 ### Using an instance of the parameter type of the function on the trait
 
-The most ergonomic way to convert from a `String` to an `Identifier` would be to call a method on a `String` instance.
+The format of calling a function on a parameter instance is:
+
+```{.rust .scrollx}
+<parameter type instance>.function(param)
+```
+
+In our case:
+
+```{.rust .scrollx}
+parameter type: `String`
+function: `from`
+param: `String`
+```
 
 Given an `String` identifier:
 
@@ -131,6 +223,12 @@ let id_string = String::from("012BCE5");
 ```
 
 let's convert it into an `Identifier` by calling the `from` function:
+
+
+```{.rust .scrollx}
+String::from(id_string)
+```
+
 
 ```{.rust .scrollx}
 let id1: Identifier = id_string.from();
