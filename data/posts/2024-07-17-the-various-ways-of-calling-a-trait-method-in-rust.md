@@ -11,7 +11,7 @@ There are many ways to invoke trait methods in Rust. This can get confusing quic
 
 ## What is a trait method?
 
-As the name implies a "trait method" is method that is defined on a trait. Let's take the following trait that converts a type to it's lowercase equivalent as an example:
+As the name implies a "trait method" is method that is defined on a trait. Let's take the following trait that converts a type to its lowercase equivalent as an example:
 
 ```{.rust .scrollx}
 trait Lower {
@@ -52,26 +52,28 @@ How do we go about invoking the functions on the `Lower` trait on an implementat
 
 Here are the standard ways of invoking a trait methods:
 
-1. Using an instance of the parameter type of the function on the trait
+1. Using an instance of the implementing type of the trait
 1. Using the type that implements the trait
 1. Using the trait
 1. Using the fully qualified implementation path to the function
 
 
-### Using an instance of the parameter type of the function on the trait
+### Using an instance of the implementing type of the trait
 
-The format of calling a function on a parameter instance is:
+> This only works if the trait method takes in a `self` parameter.
+
+The format of calling a function on a implementation instance is:
 
 ```{.rust .scrollx}
-<parameter type instance>.function(param)
+<implementation type instance>.function(param)
 ```
 
 In our case:
 
 ```{.rust .scrollx}
-parameter type: `Identifier`
+implementation type: `Identifier`
 function: `lower`
-param: `&self`
+param: `&self` // This is needed for us to call the function on the instance
 ```
 
 Given an instance of an `Identifier`:
@@ -107,7 +109,7 @@ param: `&self`
 Which gives us:
 
 ```{.rust .scrollx}
-Identifier.lower(&id)
+Identifier::lower(&id)
 ```
 
 
@@ -116,15 +118,15 @@ Identifier.lower(&id)
 The format of calling a function on a trait is:
 
 ```{.rust .scrollx}
-<Trait>::function(param)
+<trait>::function(param)
 ```
 
 In our case:
 
 ```{.rust .scrollx}
-Trait: `Lower`
+trait: `Lower`
 function: `lower`
-param: `&self`
+param: `&self` // Any implementation type of Lower
 ```
 
 which gives us:
@@ -138,16 +140,16 @@ Lower::lower(&id)
 The format of calling the fully qualified path to the function on a trait is:
 
 ```{.rust .scrollx}
-<Implementation Type as Trait>::function(param)
+<implementation Type as Trait>::function(param)
 ```
 
 In our case:
 
 ```{.rust .scrollx}
-Implementation Type: Identifier
-Trait: `Lower`
+implementation Type: Identifier
+trait: `Lower`
 function: `lower`
-param: `&self`
+param: `&self` // Accepts only `Identifier` since we are using the fully qualified path
 ```
 
 which gives us:
@@ -159,8 +161,10 @@ which gives us:
 
 ## Using From
 
+Now we know the basics of calling trait methods. Let's look at how we can use the `From` trait from the `std` library.
 
-Taking the `From` from `std` as an example:
+
+`From` is defined as:
 
 ```{.rust .scrollx}
 pub trait From<T>: Sized {
@@ -169,16 +173,18 @@ pub trait From<T>: Sized {
 }
 ```
 
-Using the above trait, we can convert from a `value` of some type `T`  to the implementing type (`Self`). The trait method
+Using the above trait, we can convert from a `value` of some source type `T` to the implementing type (`Self`). The trait method
 in this case is the `from` function. We can think of the `from` function as going from a type `T` -> `Self`.
+
+> We don't have a `self` parameter on the `from` function. This will restrict how we can call this function.
 
 In summary:
 
 ```{.rust .scrollx}
-implementation type: Self (depends on what you use)
+implementation type: Self (Depends on the implementing type)
 trait: `From`
 function: from
-function parameter type: `T` (`value` in the above example)
+function parameter type: `T` (Source type)
 ```
 
 Let's implement the `From` trait for `Identifier`, so that it converts a `String` to an `Identifier`:
@@ -200,58 +206,28 @@ function: `from`
 param: `String`
 ```
 
-### Using an instance of the parameter type of the function on the trait
+### Using an instance of the implementing type of the trait
 
-The format of calling a function on a parameter instance is:
+The format of calling a function on an implementation instance is:
 
 ```{.rust .scrollx}
-<parameter type instance>.function(param)
+<implementation instance>.function(param)
 ```
 
 In our case:
 
 ```{.rust .scrollx}
+implementation type: `Identifier`
 parameter type: `String`
 function: `from`
 param: `String`
 ```
 
-Given an `String` identifier:
+As mentioned previously as we don't have a `self` parameter to this function, we can't use it on the instance of the
+implementation type.
 
-```{.rust .scrollx}
-let id_string = String::from("012BCE5");
-```
-
-let's convert it into an `Identifier` by calling the `from` function:
-
-
-```{.rust .scrollx}
-String::from(id_string)
-```
-
-
-```{.rust .scrollx}
-let id1: Identifier = id_string.from();
-```
-
-When we try the above we get a compilation error:
-
-```{.terminal .scrollx}
-   --> src/main.rs:137:37
-    |
-137 |     let id1: Identifier = id_string.from();
-    |                           ----------^^^^--
-    |                           |         |
-    |                           |         this is an associated function, not a method
-    |                           help: use associated function syntax instead: `String::from()`
-    |
-    = note: found the following associated functions; to be used as methods, functions must have a `self` parameter
-```
-
-The compiler is reminding us that we can't call `from` on an `String` instance because the `from` function does not take a
-`self` parameter. The compiler also recommends that we use the "associated function syntax" to call the `from` function
-on the type directly. We'll look at how to do that in [Using the type that implements the trait](#using-the-type-that-implements-the-trait), for now let's see if can use an instance
-to do our conversion.
+Now while it would seem that we can't do the conversion from `String` -> `Identifier` via an instance, Rust has some
+supports that let us do that.
 
 Rust implements the `Into` trait for each implementation of the `From` trait for free. The `Into` trait is defined as:
 
@@ -283,9 +259,18 @@ In summary:
 
 ```{.rust .scrollx}
 implementation type: `T`
-trait: Into<U>, where U is the implementer of `From<T>`
+trait: Into<U> // where U is the implementer of `From<T>`
 function: into
-param: `T`
+param: self
+```
+
+In our case for converting from `String`  -> `Identifier`:
+
+```{.rust .scrollx}
+implementation type: `String`
+trait: Into<Identifier>
+function: into
+param: String
 ```
 
 The implementation above, takes two type parameters: `T` and `U`. The `U` should have a `From` implementation for `T` and if it does, when calling the `into` method on an instance of `self`, invokes the conversion from `T` -> `U` through `U::from(self)`.
@@ -306,7 +291,7 @@ If we leave off the `Identifier` type annotation on `id1`:
 let id1 = id_string.into();
 ```
 
-we get the following compilation error:
+We get the following compilation error:
 
 ```{.terminal .scrollx}
 error[E0283]: type annotations needed
@@ -360,7 +345,7 @@ In our case:
 
 ```{.rust .scrollx}
 implementation type: `Identifier`
-function: `from` (lives on the `From<T>` trait, where `T` is a `String`)
+function: `from`
 param: `String`
 ```
 
@@ -383,7 +368,7 @@ The format of calling a function on a trait is:
 In our case:
 
 ```{.rust .scrollx}
-trait: `From<T>` where `T` is a `String`
+trait: `From<String>`
 function: `from`
 param: `String`
 ```
@@ -438,7 +423,7 @@ In our case:
 
 ```{.rust .scrollx}
 implementation type: `Identifier`
-trait: `From<T>`, where `T` is `String`
+trait: `From<String>`
 function: from
 param: `String`
 ```
