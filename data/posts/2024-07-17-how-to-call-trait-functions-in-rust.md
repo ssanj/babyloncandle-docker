@@ -12,9 +12,9 @@ functions in Rust and we'll have a look at those ways in the sections below.
 Traits have two types of functions:
 
 1. Methods - These are functions that take in a `self` parameter
-1. Associated Functions - These are functions that do not take in a `self` parameter
+1. Associated Functions - These are functions that do not take a `self` parameter
 
-## These are the ways
+## How to invoke Functions of a Trait
 
 Here are the standard ways of invoking trait functions:
 
@@ -23,7 +23,7 @@ Here are the standard ways of invoking trait functions:
 1. Using the trait
 1. Using the fully qualified implementation path to the function
 
-### Lower
+### An Example
 
 Let's take the following trait that converts a type to its lowercase equivalent as an example:
 
@@ -46,7 +46,7 @@ Method: `lower`
 Function parameter type: `&self`
 ```
 
-Given, simple wrapper type `Identifier` over a `String`:
+Given, a simple wrapper type `Identifier` over a `String`:
 
 ```{.rust .scrollx}
 struct Identifier(String);
@@ -66,7 +66,7 @@ How do we go about invoking the functions on the `Lower` trait?
 
 
 
-#### Using an instance of the implementing type of the trait (for methods)
+#### Using an instance of the implementing type of the trait
 
 > This only works for trait methods; functions that take in a `self` parameter.
 
@@ -215,7 +215,7 @@ Function: `from`
 Function parameter: `String`
 ```
 
-#### Using an instance of the implementing type of the trait (for methods)
+#### Using an instance of the implementing type of the trait
 
 The format of calling a function on an implementation instance is:
 
@@ -236,7 +236,7 @@ As mentioned previously as we don't have a `self` parameter to this function, we
 implementation type.
 
 Now while it would seem that we can't do the conversion from `String` -> `Identifier` via an instance, Rust has some
-supports that let us do that.
+supports that lets us do that.
 
 Rust implements the `Into` trait for each implementation of the `From` trait for free. The `Into` trait is defined as:
 
